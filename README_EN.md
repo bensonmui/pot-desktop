@@ -4,6 +4,26 @@
 
 > A cross-platform translator application ([Telegram Group](https://t.me/pot_app))
 
+> A fork of [pot-app/pot-desktop](https://github.com/pot-app/pot-desktop) (upstream archived 2026-09-07).
+> **Fixes the built-in Bing translation / dictionary services** and includes selected upstream fixes. Licensed under **GPL-3.0**.
+
+## ✨ Changes in this fork
+
+**Fixed**
+- **Bing Translate** — the old token endpoint `edge.microsoft.com/translate/auth` was retired (HTTP 404). Now uses `bing.com/ttranslatev3`.
+- **Bing Dictionary** — the old API `/api/v6/dictionarywords/search` was disabled (HTTP 403). Now uses `bing.com/tlookupv3`.
+    - single word → dictionary card (part of speech + meanings + related words)
+    - sentence / not found → falls back to normal translation
+
+**Also included (selected upstream fixes)**
+- Window size & position use `LogicalSize` / `LogicalPosition` (multi-monitor / high-DPI)
+- More robust global hotkey registration with clear conflict errors
+- Better language detection during IME composition (Chinese input)
+- OpenAI non-streaming request fix
+- Audio playback fix on some platforms
+
+Full details: **[CHANGELOG.md](CHANGELOG.md)**
+
 ![License](https://img.shields.io/github/license/pot-app/pot-desktop.svg)
 ![Tauri](https://img.shields.io/badge/Tauri-1.6.8-blue?logo=tauri)
 ![JavaScript](https://img.shields.io/badge/-JavaScript-yellow?logo=javascript&logoColor=white)
@@ -16,7 +36,7 @@
 <hr/>
 <div align="center">
 
-<h3><a href='./README.md'>中文</a> | English | <a href='./README_KR.md'> 한글 </a></h3>
+<h3><a href='./README.md'>中文</a> | English | <a href='./README_KR.md'> 한국어 </a></h3>
 
 <table>
 <tr>

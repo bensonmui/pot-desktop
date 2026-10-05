@@ -4,6 +4,26 @@
 
 > A cross-platform translator application ([Telegram Group](https://t.me/pot_app))
 
+> [pot-app/pot-desktop](https://github.com/pot-app/pot-desktop)의 fork입니다 (업스트림은 2026-09-07에 아카이브됨).
+> **내장 Bing 번역 / 사전 서비스를 수정**했고 일부 업스트림 수정을 포함합니다. 라이선스 **GPL-3.0**.
+
+## ✨ 이 fork의 변경 사항
+
+**수정**
+- **Bing 번역** — 사용 중단된 `edge.microsoft.com/translate/auth` (HTTP 404) 대신 `bing.com/ttranslatev3` 사용.
+- **Bing 사전** — 중단된 `/api/v6/dictionarywords/search` (HTTP 403) 대신 `bing.com/tlookupv3` 사용.
+    - 단어 → 사전 카드 (품사 + 뜻 + 연관어)
+    - 문장 / 검색 결과 없음 → 일반 번역으로 대체
+
+**포함된 업스트림 수정**
+- 창 크기/위치에 `LogicalSize` / `LogicalPosition` 사용 (다중 모니터 / 고DPI)
+- 충돌 시 명확한 오류를 주는 안정적인 전역 단축키 등록
+- IME(중국어 입력) 조합 중 언어 감지 개선
+- OpenAI 비스트리밍 요청 수정
+- 일부 플랫폼 오디오 재생 수정
+
+자세히: **[CHANGELOG.md](CHANGELOG.md)**
+
 ![License](https://img.shields.io/github/license/pot-app/pot-desktop.svg)
 ![Tauri](https://img.shields.io/badge/Tauri-1.6.8-blue?logo=tauri)
 ![JavaScript](https://img.shields.io/badge/-JavaScript-yellow?logo=javascript&logoColor=white)
@@ -16,7 +36,7 @@
 <hr/>
 <div align="center">
 
-<h3><a href='./README.md'>中文</a> | <a href='./README_EN.md'> English </a> | 한글</h3>
+<h3><a href='./README.md'>中文</a> | <a href='./README_EN.md'> English </a> | 한국어</h3>
 
 <table>
 <tr>

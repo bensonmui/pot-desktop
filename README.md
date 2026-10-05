@@ -4,13 +4,25 @@
 
 > 🌈 一个跨平台的划词翻译软件 ([QQ 频道](https://pd.qq.com/s/akns94e1r))
 
-> A fork of [pot-app/pot-desktop](https://github.com/pot-app/pot-desktop) (upstream archived 2026-09-07).
-> It fixes the built-in Bing translation / dictionary services and includes selected upstream fixes. Licensed under **GPL-3.0**.
+> 本專案是 [pot-app/pot-desktop](https://github.com/pot-app/pot-desktop) 的 fork（上游已於 2026-09-07 封存）。
+> **修復了內建的 Bing 翻譯 / Bing 詞典服務**，並包含部分上游修正。授權 **GPL-3.0**。
 
-## Changes in this fork
+## ✨ 本 fork 的變更
 
-Built-in Bing translation / dictionary fixes plus selected upstream fixes.
-See [CHANGELOG.md](CHANGELOG.md) for details.
+**修正**
+- **Bing 翻譯** — 舊 token 端點 `edge.microsoft.com/translate/auth` 已下線（HTTP 404），改用 `bing.com/ttranslatev3`。
+- **Bing 詞典** — 舊 API `/api/v6/dictionarywords/search` 已停用（HTTP 403），改用 `bing.com/tlookupv3`。
+    - 單詞 → 詞典卡片（詞性 + 釋義 + 聯想詞）
+    - 句子 / 查不到 → 自動回退為一般翻譯
+
+**另含（精選上游修正）**
+- 視窗尺寸/位置改用 `LogicalSize` / `LogicalPosition`（多螢幕 / 高 DPI 正確）
+- 更穩健的全域熱鍵註冊，衝突時給明確錯誤
+- 改善中文輸入法（IME）組字時的語言偵測
+- 修正 OpenAI 非串流請求
+- 修正部分平台的音效播放
+
+完整內容：**[CHANGELOG.md](CHANGELOG.md)**
 
 ![License](https://img.shields.io/github/license/pot-app/pot-desktop.svg)
 ![Tauri](https://img.shields.io/badge/Tauri-1.6.8-blue?logo=tauri)
@@ -24,7 +36,7 @@ See [CHANGELOG.md](CHANGELOG.md) for details.
 <hr/>
 <div align="center">
 
-<h3>中文 | <a href='./README_EN.md'>English</a> | <a href='./README_KR.md'> 한글 </a></h3>
+<h3>中文 | <a href='./README_EN.md'>English</a> | <a href='./README_KR.md'> 한국어 </a></h3>
 
 <table>
 <tr>
