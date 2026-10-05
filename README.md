@@ -4,9 +4,13 @@
 
 > 🌈 一个跨平台的划词翻译软件 ([QQ 频道](https://pd.qq.com/s/akns94e1r))
 
-> ⚠️ **非官方 fork**（unofficial fork）of [pot-app/pot-desktop](https://github.com/pot-app/pot-desktop)（上游已於 2026-09-07 封存）。
-> 本 fork 修復了內建的 Bing 翻譯 / Bing 詞典服務，並以 **GPL-3.0** 授權。
-> 與上游的差異請見 git log。
+> A fork of [pot-app/pot-desktop](https://github.com/pot-app/pot-desktop) (upstream archived 2026-09-07).
+> It fixes the built-in Bing translation / dictionary services and includes selected upstream fixes. Licensed under **GPL-3.0**.
+
+## Changes in this fork
+
+Built-in Bing translation / dictionary fixes plus selected upstream fixes.
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ![License](https://img.shields.io/github/license/pot-app/pot-desktop.svg)
 ![Tauri](https://img.shields.io/badge/Tauri-1.6.8-blue?logo=tauri)
