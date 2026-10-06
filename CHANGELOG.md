@@ -3,6 +3,13 @@
 本 fork 的變更，中英雙語。
 Notable changes in this fork, in Chinese and English.
 
+## [3.0.21] - 2026-10-06
+
+### Fixed / 修正
+
+- **翻譯視窗無法拖動**：修正 3.0.19 科技感改版時，標題列被 `z-index` 蓋住 `data-tauri-drag-region`，導致翻譯視窗拖不動的問題（未釘選也無法移動）。
+  **Window cannot be dragged**: fixed a regression from the 3.0.19 tech-look update where the title bar's `z-index` covered the `data-tauri-drag-region`, making the translate window undraggable (even when not pinned).
+
 ## [3.0.20] - 2026-10-06
 
 ### Fixed / 修正

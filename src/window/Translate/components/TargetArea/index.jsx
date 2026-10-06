@@ -12,7 +12,7 @@ import {
     Tooltip,
 } from '@nextui-org/react';
 import { BiCollapseVertical, BiExpandVertical } from 'react-icons/bi';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { BaseDirectory, readTextFile } from '@tauri-apps/api/fs';
 import { sendNotification } from '@tauri-apps/api/notification';
 import React, { useEffect, useState, useRef } from 'react';
@@ -574,17 +574,12 @@ export default function TargetArea(props) {
                 <div ref={boundRef}>
                     {/* result content */}
                     <CardBody className={`p-[12px] pb-0 ${hide && 'h-0 p-0'}`}>
-                        <AnimatePresence
-                            mode='wait'
-                            initial={false}
+                        <motion.div
+                            key={`${currentTranslateServiceInstanceKey}-${sourceLanguage}-${targetLanguage}`}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: uiAnimations ? 0.15 : 0 }}
                         >
-                            <motion.div
-                                key={`${currentTranslateServiceInstanceKey}-${sourceLanguage}-${targetLanguage}`}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: uiAnimations ? 0.15 : 0 }}
-                            >
                         {typeof result === 'string' ? (
                             markdownRender && result ? (
                                 <div
@@ -758,8 +753,7 @@ export default function TargetArea(props) {
                         ) : (
                             <></>
                         )}
-                            </motion.div>
-                        </AnimatePresence>
+                        </motion.div>
                     </CardBody>
                     <CardFooter
                         className={`${uiGlass ? 'bg-content1/60' : 'bg-content1'} rounded-none rounded-b-[10px] flex px-[12px] p-[5px] ${hide && 'hidden'}`}
