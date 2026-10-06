@@ -1,4 +1,5 @@
 import { Button, Card, CardBody, CardFooter, ButtonGroup, Chip, Tooltip, Spacer } from '@nextui-org/react';
+import { motion } from 'framer-motion';
 import { BaseDirectory, readTextFile } from '@tauri-apps/api/fs';
 import React, { useEffect, useRef, useState } from 'react';
 import { writeText } from '@tauri-apps/api/clipboard';
@@ -30,6 +31,16 @@ export const detectLanguageAtom = atom('');
 let unlisten = null;
 let timer = null;
 
+const Press = ({ children }) => (
+    <motion.span
+        whileHover={{ scale: 1.12 }}
+        whileTap={{ scale: 0.88 }}
+        className='flex'
+    >
+        {children}
+    </motion.span>
+);
+
 export default function SourceArea(props) {
     const { pluginList, serviceInstanceConfigMap } = props;
     const [appFontSize] = useConfig('app_font_size', 16);
@@ -43,6 +54,7 @@ export default function SourceArea(props) {
     const [ttsServiceList] = useConfig('tts_service_list', ['lingva_tts']);
     const [hideWindow] = useConfig('translate_hide_window', false);
     const [hideSource] = useConfig('hide_source', false);
+    const [uiGlass] = useConfig('ui_glass', true);
     const [ttsPluginInfo, setTtsPluginInfo] = useState();
     const [windowType, setWindowType] = useState('[SELECTION_TRANSLATE]');
     const toastStyle = useToastStyle();
@@ -340,10 +352,10 @@ export default function SourceArea(props) {
         <div className={hideSource && windowType !== '[INPUT_TRANSLATE]' && 'hidden'}>
             <Card
                 shadow='none'
-                className='bg-content1 rounded-[10px] mt-[1px] pb-0'
+                className={`${uiGlass ? 'bg-content1/60 glass' : 'bg-content1'} glow-card rounded-[10px] mt-[1px] pb-0`}
             >
                 <Toaster />
-                <CardBody className='bg-content1 p-[12px] pb-0 max-h-[40vh] overflow-y-auto'>
+                <CardBody className={`${uiGlass ? 'bg-content1/60' : 'bg-content1'} p-[12px] pb-0 max-h-[40vh] overflow-y-auto`}>
                     <textarea
                         autoFocus
                         ref={textAreaRef}
@@ -367,7 +379,7 @@ export default function SourceArea(props) {
                     />
                 </CardBody>
 
-                <CardFooter className='bg-content1 rounded-none rounded-b-[10px] flex justify-between px-[12px] p-[5px]'>
+                <CardFooter className={`${uiGlass ? 'bg-content1/60' : 'bg-content1'} rounded-none rounded-b-[10px] flex justify-between px-[12px] p-[5px]`}>
                     <div className='flex justify-start'>
                         <ButtonGroup className='mr-[5px]'>
                             <Tooltip content={t('translate.speak')}>
@@ -381,7 +393,9 @@ export default function SourceArea(props) {
                                         });
                                     }}
                                 >
-                                    <HiOutlineVolumeUp className='text-[16px]' />
+                                    <Press>
+                                        <HiOutlineVolumeUp className='text-[16px]' />
+                                    </Press>
                                 </Button>
                             </Tooltip>
                             <Tooltip content={t('translate.copy')}>
@@ -393,7 +407,9 @@ export default function SourceArea(props) {
                                         writeText(sourceText);
                                     }}
                                 >
-                                    <MdContentCopy className='text-[16px]' />
+                                    <Press>
+                                        <MdContentCopy className='text-[16px]' />
+                                    </Press>
                                 </Button>
                             </Tooltip>
                             <Tooltip content={t('translate.delete_newline')}>
@@ -409,7 +425,9 @@ export default function SourceArea(props) {
                                         });
                                     }}
                                 >
-                                    <MdSmartButton className='text-[16px]' />
+                                    <Press>
+                                        <MdSmartButton className='text-[16px]' />
+                                    </Press>
                                 </Button>
                             </Tooltip>
                             <Tooltip content={t('common.clear')}>
@@ -422,7 +440,9 @@ export default function SourceArea(props) {
                                         setSourceText('');
                                     }}
                                 >
-                                    <LuDelete className='text-[16px]' />
+                                    <Press>
+                                        <LuDelete className='text-[16px]' />
+                                    </Press>
                                 </Button>
                             </Tooltip>
                         </ButtonGroup>
@@ -444,7 +464,11 @@ export default function SourceArea(props) {
                             variant='light'
                             isIconOnly
                             className='text-[14px] font-bold'
-                            startContent={<HiTranslate className='text-[16px]' />}
+                            startContent={
+                                <Press>
+                                    <HiTranslate className='text-[16px]' />
+                                </Press>
+                            }
                             onPress={() => {
                                 detect_language(sourceText).then(() => {
                                     syncSourceText();

@@ -108,6 +108,13 @@
                 }
             },
             "translate": {
+                "appearance": "外观",
+                "ui_glass": "毛玻璃效果",
+                "ui_glow": "微光边框",
+                "ui_spotlight": "鼠标跟随高光",
+                "ui_tech_bg": "渐变背景",
+                "ui_animations": "界面动画",
+                "ui_shimmer": "加载流光",
                 "side_by_side": "原文与译文并排",
                 "incremental_translate_tip": "开启后，连续复制时会把新文字追加到原文，而不是替换（方便分段收集后一次翻译）。",
                 "dynamic_translate_tip": "开启后，输入时即时翻译（边打字边翻译）。",

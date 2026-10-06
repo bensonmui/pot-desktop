@@ -51,6 +51,12 @@ export default function Translate() {
     const [hideLanguage, setHideLanguage] = useConfig('hide_language', false);
     const [hideWindow, setHideWindow] = useConfig('translate_hide_window', false);
     const [sideBySide, setSideBySide] = useConfig('translate_side_by_side', false);
+    const [uiGlass, setUiGlass] = useConfig('ui_glass', true);
+    const [uiGlow, setUiGlow] = useConfig('ui_glow', true);
+    const [uiSpotlight, setUiSpotlight] = useConfig('ui_spotlight', true);
+    const [uiTechBg, setUiTechBg] = useConfig('ui_tech_bg', true);
+    const [uiAnimations, setUiAnimations] = useConfig('ui_animations', true);
+    const [uiShimmer, setUiShimmer] = useConfig('ui_shimmer', true);
     const [closeOnBlur, setCloseOnBlur] = useConfig('translate_close_on_blur', true);
     const [alwaysOnTop, setAlwaysOnTop] = useConfig('translate_always_on_top', false);
     const { t } = useTranslation();
@@ -393,6 +399,77 @@ export default function Translate() {
                                 isSelected={sideBySide}
                                 onValueChange={(v) => {
                                     setSideBySide(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                </CardBody>
+            </Card>
+            <Card className='mt-[10px]'>
+                <CardBody>
+                    <h3 className='my-auto mx-0 font-bold'>{t('config.translate.appearance')}</h3>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.ui_glass')}</h3>
+                        {uiGlass !== null && (
+                            <Switch
+                                isSelected={uiGlass}
+                                onValueChange={(v) => {
+                                    setUiGlass(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.ui_glow')}</h3>
+                        {uiGlow !== null && (
+                            <Switch
+                                isSelected={uiGlow}
+                                onValueChange={(v) => {
+                                    setUiGlow(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.ui_spotlight')}</h3>
+                        {uiSpotlight !== null && (
+                            <Switch
+                                isSelected={uiSpotlight}
+                                onValueChange={(v) => {
+                                    setUiSpotlight(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.ui_tech_bg')}</h3>
+                        {uiTechBg !== null && (
+                            <Switch
+                                isSelected={uiTechBg}
+                                onValueChange={(v) => {
+                                    setUiTechBg(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.ui_animations')}</h3>
+                        {uiAnimations !== null && (
+                            <Switch
+                                isSelected={uiAnimations}
+                                onValueChange={(v) => {
+                                    setUiAnimations(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.ui_shimmer')}</h3>
+                        {uiShimmer !== null && (
+                            <Switch
+                                isSelected={uiShimmer}
+                                onValueChange={(v) => {
+                                    setUiShimmer(v);
                                 }}
                             />
                         )}

@@ -8,6 +8,7 @@ import { AiFillCloseCircle } from 'react-icons/ai';
 import React, { useState, useEffect } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { BsPinFill } from 'react-icons/bs';
+import { motion } from 'framer-motion';
 
 import LanguageArea from './components/LanguageArea';
 import SourceArea from './components/SourceArea';
@@ -81,7 +82,10 @@ export default function Translate() {
     const [collectionServiceInstanceList] = useConfig('collection_service_list', []);
     const [hideLanguage] = useConfig('hide_language', false);
     const [sideBySide] = useConfig('translate_side_by_side', false);
+    const [uiTechBg] = useConfig('ui_tech_bg', true);
+    const [uiAnimations] = useConfig('ui_animations', true);
     const [pined, setPined] = useState(false);
+    const [closing, setClosing] = useState(false);
     const [pluginList, setPluginList] = useState(null);
     const [serviceInstanceConfigMap, setServiceInstanceConfigMap] = useState(null);
     const reorder = (list, startIndex, endIndex) => {
@@ -275,15 +279,17 @@ export default function Translate() {
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                             >
-                                                <TargetArea
-                                                    {...provided.dragHandleProps}
-                                                    index={index}
-                                                    name={serviceInstanceKey}
-                                                    translateServiceInstanceList={translateServiceInstanceList}
-                                                    pluginList={pluginList}
-                                                    serviceInstanceConfigMap={serviceInstanceConfigMap}
-                                                />
-                                                <Spacer y={2} />
+                                                <motion.div {...cardAnim}>
+                                                    <TargetArea
+                                                        {...provided.dragHandleProps}
+                                                        index={index}
+                                                        name={serviceInstanceKey}
+                                                        translateServiceInstanceList={translateServiceInstanceList}
+                                                        pluginList={pluginList}
+                                                        serviceInstanceConfigMap={serviceInstanceConfigMap}
+                                                    />
+                                                    <Spacer y={2} />
+                                                </motion.div>
                                             </div>
                                         )}
                                     </Draggable>
@@ -297,18 +303,45 @@ export default function Translate() {
         </DragDropContext>
     );
 
+    const rootAnim = uiAnimations
+        ? {
+              initial: { opacity: 0, scale: 0.98 },
+              animate: closing ? { opacity: 0, scale: 0.98 } : { opacity: 1, scale: 1 },
+              transition: { type: 'spring', stiffness: 320, damping: 28 },
+          }
+        : {
+              initial: false,
+              animate: { opacity: 1, scale: 1 },
+              transition: { duration: 0 },
+          };
+
+    const cardAnim = uiAnimations
+        ? {
+              initial: { opacity: 0, y: 10 },
+              animate: { opacity: 1, y: 0 },
+              transition: { type: 'spring', stiffness: 320, damping: 26 },
+          }
+        : {
+              initial: false,
+              animate: { opacity: 1, y: 0 },
+              transition: { duration: 0 },
+          };
+
     return (
         pluginList && (
-            <div
-                className={`bg-background h-screen w-screen ${
+            <motion.div
+                {...rootAnim}
+                className={`relative bg-background h-screen w-screen overflow-hidden ${
                     osType === 'Linux' && 'rounded-[10px] border-1 border-default-100'
                 }`}
             >
+                {uiTechBg && <div className='pointer-events-none absolute inset-0 z-0 tech-bg' />}
+                {uiTechBg && <div className='pointer-events-none absolute inset-0 z-0 tech-noise' />}
                 <div
                     className='fixed top-[5px] left-[5px] right-[5px] h-[30px]'
                     data-tauri-drag-region='true'
                 />
-                <div className={`h-[35px] w-full flex ${osType === 'Darwin' ? 'justify-end' : 'justify-between'}`}>
+                <div className={`relative z-10 h-[35px] w-full flex ${osType === 'Darwin' ? 'justify-end' : 'justify-between'}`}>
                     <Button
                         isIconOnly
                         size='sm'
@@ -337,13 +370,20 @@ export default function Translate() {
                         disableAnimation
                         className={`my-auto ${osType === 'Darwin' && 'hidden'} bg-transparent`}
                         onPress={() => {
-                            void appWindow.close();
+                            if (!uiAnimations) {
+                                void appWindow.close();
+                                return;
+                            }
+                            setClosing(true);
+                            setTimeout(() => {
+                                void appWindow.close();
+                            }, 150);
                         }}
                     >
                         <AiFillCloseCircle className='text-[20px] text-default-400' />
                     </Button>
                 </div>
-                <div className={`${osType === 'Linux' ? 'h-[calc(100vh-37px)]' : 'h-[calc(100vh-35px)]'} px-[8px]`}>
+                <div className={`relative z-10 ${osType === 'Linux' ? 'h-[calc(100vh-37px)]' : 'h-[calc(100vh-35px)]'} px-[8px]`}>
                     <div className={`h-full overflow-y-auto ${sideBySide ? 'flex flex-wrap items-start content-start' : ''}`}>
                         <div className={sideBySide ? 'w-1/2 min-w-0 order-2 sticky top-0 pr-3 border-r border-default-200' : ''}>
                             {serviceInstanceConfigMap !== null && (
@@ -366,7 +406,7 @@ export default function Translate() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         )
     );
 }

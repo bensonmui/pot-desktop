@@ -12,6 +12,7 @@ import {
     Tooltip,
 } from '@nextui-org/react';
 import { BiCollapseVertical, BiExpandVertical } from 'react-icons/bi';
+import { motion, AnimatePresence } from 'framer-motion';
 import { BaseDirectory, readTextFile } from '@tauri-apps/api/fs';
 import { sendNotification } from '@tauri-apps/api/notification';
 import React, { useEffect, useState, useRef } from 'react';
@@ -39,6 +40,16 @@ import * as builtinCollectionServices from '../../../../services/collection';
 import { sourceLanguageAtom, targetLanguageAtom } from '../LanguageArea';
 import { useConfig, useToastStyle, useVoice } from '../../../../hooks';
 import { sourceTextAtom, detectLanguageAtom } from '../SourceArea';
+
+const Press = ({ children }) => (
+    <motion.span
+        whileHover={{ scale: 1.12 }}
+        whileTap={{ scale: 0.88 }}
+        className='flex'
+    >
+        {children}
+    </motion.span>
+);
 import { invoke_plugin } from '../../../../utils/invoke_plugin';
 import { cacheGet, cacheSet } from '../../../../utils/translate_cache';
 import * as builtinServices from '../../../../services/translate';
@@ -93,6 +104,11 @@ export default function TargetArea(props) {
     const targetLanguage = useAtomValue(targetLanguageAtom);
     const [autoCopy] = useConfig('translate_auto_copy', 'disable');
     const [hideWindow] = useConfig('translate_hide_window', false);
+    const [uiGlass] = useConfig('ui_glass', true);
+    const [uiGlow] = useConfig('ui_glow', true);
+    const [uiSpotlight] = useConfig('ui_spotlight', true);
+    const [uiShimmer] = useConfig('ui_shimmer', true);
+    const [uiAnimations] = useConfig('ui_animations', true);
     const [clipboardMonitor] = useConfig('clipboard_monitor', false);
 
     const detectLanguage = useAtomValue(detectLanguageAtom);
@@ -407,18 +423,26 @@ export default function TargetArea(props) {
 
     const [boundRef, bounds] = useMeasure({ scroll: true });
     const springs = useSpring({
-        from: { height: 0 },
-        to: { height: hide ? 0 : bounds.height },
+        from: { height: 0, opacity: 0 },
+        to: { height: hide ? 0 : bounds.height, opacity: hide ? 0 : 1 },
+        config: { tension: 280, friction: 30 },
     });
 
     return (
         <Card
             shadow='none'
-            className='rounded-[10px]'
+            className={`rounded-[10px] relative overflow-hidden ${
+                uiGlass ? 'glass bg-content1/60' : 'bg-content1'
+            } ${uiGlow ? 'glow-card' : ''} ${uiSpotlight ? 'spotlight' : ''}`}
+            onMouseMove={(e) => {
+                const r = e.currentTarget.getBoundingClientRect();
+                e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`);
+                e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`);
+            }}
         >
             <Toaster />
             <CardHeader
-                className={`flex justify-between py-1 px-0 bg-content2 h-[30px] ${hide ? 'rounded-[10px]' : 'rounded-t-[10px]'}`}
+                className={`flex justify-between py-1 px-0 ${uiGlass ? 'bg-content2/60' : 'bg-content2'} h-[30px] ${hide ? 'rounded-[10px]' : 'rounded-t-[10px]'}`}
                 {...drag}
             >
                 {/* current service instance and available service instance to change */}
@@ -545,10 +569,22 @@ export default function TargetArea(props) {
                     </Button>
                 </div>
             </CardHeader>
+            {uiShimmer && isLoading && <div className='shimmer h-[2px] w-full' />}
             <animated.div style={{ ...springs }}>
                 <div ref={boundRef}>
                     {/* result content */}
                     <CardBody className={`p-[12px] pb-0 ${hide && 'h-0 p-0'}`}>
+                        <AnimatePresence
+                            mode='wait'
+                            initial={false}
+                        >
+                            <motion.div
+                                key={`${currentTranslateServiceInstanceKey}-${sourceLanguage}-${targetLanguage}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: uiAnimations ? 0.15 : 0 }}
+                            >
                         {typeof result === 'string' ? (
                             markdownRender && result ? (
                                 <div
@@ -722,9 +758,11 @@ export default function TargetArea(props) {
                         ) : (
                             <></>
                         )}
+                            </motion.div>
+                        </AnimatePresence>
                     </CardBody>
                     <CardFooter
-                        className={`bg-content1 rounded-none rounded-b-[10px] flex px-[12px] p-[5px] ${hide && 'hidden'}`}
+                        className={`${uiGlass ? 'bg-content1/60' : 'bg-content1'} rounded-none rounded-b-[10px] flex px-[12px] p-[5px] ${hide && 'hidden'}`}
                     >
                         <ButtonGroup>
                             {/* speak button */}
@@ -740,7 +778,9 @@ export default function TargetArea(props) {
                                         });
                                     }}
                                 >
-                                    <HiOutlineVolumeUp className='text-[16px]' />
+                                    <Press>
+                                        <HiOutlineVolumeUp className='text-[16px]' />
+                                    </Press>
                                 </Button>
                             </Tooltip>
                             {/* copy button */}
@@ -754,7 +794,9 @@ export default function TargetArea(props) {
                                         writeText(result);
                                     }}
                                 >
-                                    <MdContentCopy className='text-[16px]' />
+                                    <Press>
+                                        <MdContentCopy className='text-[16px]' />
+                                    </Press>
                                 </Button>
                             </Tooltip>
                             {/* translate back button */}
@@ -876,7 +918,9 @@ export default function TargetArea(props) {
                                         }
                                     }}
                                 >
-                                    <TbTransformFilled className='text-[16px]' />
+                                    <Press>
+                                        <TbTransformFilled className='text-[16px]' />
+                                    </Press>
                                 </Button>
                             </Tooltip>
                             {/* error retry button */}
@@ -892,7 +936,9 @@ export default function TargetArea(props) {
                                         translate();
                                     }}
                                 >
-                                    <GiCycle className='text-[16px]' />
+                                    <Press>
+                                        <GiCycle className='text-[16px]' />
+                                    </Press>
                                 </Button>
                             </Tooltip>
                             {/* available collection service instance */}

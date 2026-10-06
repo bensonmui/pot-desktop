@@ -108,6 +108,13 @@
                 }
             },
             "translate": {
+                "appearance": "Appearance",
+                "ui_glass": "Frosted glass",
+                "ui_glow": "Glow border",
+                "ui_spotlight": "Cursor highlight",
+                "ui_tech_bg": "Gradient background",
+                "ui_animations": "UI animations",
+                "ui_shimmer": "Loading shimmer",
                 "side_by_side": "Side-by-side source & translation",
                 "incremental_translate_tip": "When on, newly copied text is appended to the source instead of replacing it (collect several pieces, then translate once).",
                 "dynamic_translate_tip": "When on, text is translated as you type.",

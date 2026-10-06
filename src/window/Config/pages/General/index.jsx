@@ -25,6 +25,8 @@ let timer = null;
 
 export default function General() {
     const [autoStart, setAutoStart] = useState(false);
+    const [autoStartLoaded, setAutoStartLoaded] = useState(false);
+    const [autoStartAnimReady, setAutoStartAnimReady] = useState(false);
     const [fontList, setFontList] = useState(null);
     const [checkUpdate, setCheckUpdate] = useConfig('check_update', true);
     const [clipboardMonitor, setClipboardMonitor] = useConfig('clipboard_monitor', false);
@@ -72,11 +74,22 @@ export default function General() {
     useEffect(() => {
         isEnabled().then((v) => {
             setAutoStart(v);
+            setAutoStartLoaded(true);
         });
         invoke('font_list').then((v) => {
             setFontList(v);
         });
     }, []);
+
+    useEffect(() => {
+        if (!autoStartLoaded) {
+            return;
+        }
+        const timer = setTimeout(() => {
+            setAutoStartAnimReady(true);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [autoStartLoaded]);
 
     return (
         <>
@@ -87,6 +100,7 @@ export default function General() {
                         <h3>{t('config.general.auto_start')}</h3>
                         <Switch
                             isSelected={autoStart}
+                            disableAnimation={!autoStartAnimReady}
                             onValueChange={(v) => {
                                 setAutoStart(v);
                                 if (v) {

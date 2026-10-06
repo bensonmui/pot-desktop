@@ -25,3 +25,72 @@ html {
 *::-webkit-scrollbar-thumb:hover {
     background: #c0c1c550;
 }
+
+/* ===== 科技感樣式 ===== */
+
+/* 漸層背景（疊在視窗背景之上） */
+.tech-bg {
+    background-image:
+        radial-gradient(60% 55% at 10% -5%, rgba(56, 189, 248, 0.14), transparent 70%),
+        radial-gradient(55% 50% at 100% 0%, rgba(168, 85, 247, 0.14), transparent 70%),
+        radial-gradient(70% 60% at 50% 120%, rgba(34, 211, 238, 0.1), transparent 70%);
+}
+
+/* 噪點 */
+.tech-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+}
+
+/* 毛玻璃 */
+.glass {
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+}
+
+/* hover 微光邊框 */
+.glow-card {
+    transition:
+        box-shadow 0.28s ease,
+        transform 0.28s ease;
+}
+.glow-card:hover {
+    box-shadow:
+        0 0 0 1px rgba(56, 189, 248, 0.35),
+        0 0 22px rgba(56, 189, 248, 0.18);
+}
+
+/* Loading shimmer */
+.shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    background-size: 200% 100%;
+    animation: pot-shimmer 1.2s linear infinite;
+}
+@keyframes pot-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* 滑鼠跟隨高光 */
+.spotlight::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    background: radial-gradient(
+        180px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(255, 255, 255, 0.08),
+        transparent 65%
+    );
+}
+.spotlight:hover::before {
+    opacity: 1;
+}

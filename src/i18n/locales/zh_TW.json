@@ -108,6 +108,13 @@
                 "dev_mode": "開發者模式"
             },
             "translate": {
+                "appearance": "外觀",
+                "ui_glass": "毛玻璃效果",
+                "ui_glow": "微光邊框",
+                "ui_spotlight": "滑鼠跟隨高光",
+                "ui_tech_bg": "漸層背景",
+                "ui_animations": "介面動畫",
+                "ui_shimmer": "載入流光",
                 "side_by_side": "原文與譯文並排",
                 "incremental_translate_tip": "開啟後，連續複製時會把新文字接續到原文，而不是取代（方便分段收集後一次翻譯）。",
                 "dynamic_translate_tip": "開啟後，輸入時即時翻譯（邊打字邊翻）。",

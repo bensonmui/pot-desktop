@@ -26,6 +26,8 @@
 - **Setting info tooltips** (ⓘ icons on 5 toggles in the Translate settings page).
 - **Service ⚡ test button** (per-service test + latency), **history search / JSON export / single delete**, **side-by-side source & translation**.
 - **LibreTranslate / DeepLX** services (custom endpoints), **Google TTS** (keyless read-aloud).
+- **UI animations** (`framer-motion`): card entrance, result cross-fade, window open/close, language swap, button micro-interactions.
+- **Tech-inspired look**: frosted glass, glow border, cursor-following highlight, gradient/noise background, spring motion, fluid collapse, shimmer.
 
 **Fixed**
 - **Language detection delay** — defaults to local (offline) detection; remote engines time out and fall back, so a slow or blocked endpoint no longer delays translation.

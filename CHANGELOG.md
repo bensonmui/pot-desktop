@@ -3,6 +3,22 @@
 本 fork 的變更，中英雙語。
 Notable changes in this fork, in Chinese and English.
 
+## [3.0.19] - 2026-10-06
+
+### Changed / 調整
+
+- **科技感視覺**：卡片與語言列改為**毛玻璃**（半透明 + backdrop-blur）、hover 有**微光邊框**、卡片內有**滑鼠跟隨高光**、視窗加**漸層＋噪點背景**；動效改用**彈性 spring**、卡片**展開／收合**更流體，翻譯中加上 **shimmer** 流光。
+  **Tech-inspired look**: cards and the language bar now use **frosted glass** (translucent + backdrop-blur), a **glow border** on hover, a **cursor-following highlight** inside cards, and a **gradient + noise** window background; motion now uses **spring**, card **expand/collapse** is more fluid, and a **shimmer** line shows while translating.
+- **外觀設定**：翻譯設定頁新增「**外觀**」區塊，可**個別開關**毛玻璃、微光邊框、滑鼠跟隨高光、漸層背景、介面動畫、載入流光（不喜歡科技感的使用者可全部關掉）。
+  **Appearance settings**: the Translate settings page gains an "**Appearance**" section to **individually toggle** frosted glass, glow border, cursor highlight, gradient background, UI animations, and loading shimmer (users who dislike the effects can turn them all off).
+
+## [3.0.18] - 2026-10-06
+
+### Added / 新增
+
+- **介面動畫**（`framer-motion`）：翻譯卡**進場**（淡入＋上滑）、**結果切換交叉淡入**、**翻譯視窗開啟／關閉**動畫、**語言交換**圖示旋轉與標籤交叉淡入、**按鈕／圖示微互動**（hover 放大、點擊縮小）。
+  **UI animations** (`framer-motion`): translation cards **fade/slide in**, results **cross-fade** when switching, the window **fades in/out**, the language-swap icon **rotates** with label cross-fade, and buttons/icons have **hover/tap micro-interactions**.
+
 ## [3.0.17] - 2026-10-06
 
 ### Added / 新增

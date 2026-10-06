@@ -1,7 +1,8 @@
 import { Card, Button, CardFooter, Dropdown, DropdownMenu, DropdownTrigger, DropdownItem } from '@nextui-org/react';
 import { useTranslation } from 'react-i18next';
 import { BiTransferAlt } from 'react-icons/bi';
-import React, { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 import { atom, useAtom, useAtomValue } from 'jotai';
 
 import { languageList } from '../../../../utils/language';
@@ -16,11 +17,13 @@ export default function LanguageArea() {
     const [translateSourceLanguage, setTranslateSourceLanguage] = useConfig('translate_source_language', 'auto');
     const [translateTargetLanguage, setTranslateTargetLanguage] = useConfig('translate_target_language', 'zh_cn');
     const [translateSecondLanguage] = useConfig('translate_second_language', 'en');
+    const [uiGlass] = useConfig('ui_glass', true);
 
     const [sourceLanguage, setSourceLanguage] = useAtom(sourceLanguageAtom);
     const [targetLanguage, setTargetLanguage] = useAtom(targetLanguageAtom);
     const detectLanguage = useAtomValue(detectLanguageAtom);
     const { t } = useTranslation();
+    const [rotation, setRotation] = useState(0);
 
     useEffect(() => {
         if (translateSourceLanguage) {
@@ -41,9 +44,9 @@ export default function LanguageArea() {
     return (
         <Card
             shadow='none'
-            className='bg-content2 h-[35px] rounded-[10px]'
+            className={`${uiGlass ? 'bg-content2/60 glass' : 'bg-content2'} h-[35px] rounded-[10px]`}
         >
-            <CardFooter className='bg-content2 flex justify-between p-0 rounded-[10px]'>
+            <CardFooter className={`${uiGlass ? 'bg-content2/60' : 'bg-content2'} flex justify-between p-0 rounded-[10px]`}>
                 <div className='flex'>
                     <Dropdown>
                         <DropdownTrigger>
@@ -51,7 +54,20 @@ export default function LanguageArea() {
                                 radius='sm'
                                 variant='light'
                             >
-                                {t(`languages.${sourceLanguage}`)}
+                                <AnimatePresence
+                                    mode='wait'
+                                    initial={false}
+                                >
+                                    <motion.span
+                                        key={sourceLanguage}
+                                        initial={{ opacity: 0, y: -6 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 6 }}
+                                        transition={{ duration: 0.14 }}
+                                    >
+                                        {t(`languages.${sourceLanguage}`)}
+                                    </motion.span>
+                                </AnimatePresence>
                             </Button>
                         </DropdownTrigger>
                         <DropdownMenu
@@ -75,6 +91,7 @@ export default function LanguageArea() {
                         variant='light'
                         className='text-[20px]'
                         onPress={async () => {
+                            setRotation((r) => r + 180);
                             if (sourceLanguage !== 'auto') {
                                 const oldSourceLanguage = sourceLanguage;
                                 setSourceLanguage(targetLanguage);
@@ -96,7 +113,13 @@ export default function LanguageArea() {
                             }
                         }}
                     >
-                        <BiTransferAlt />
+                        <motion.span
+                            animate={{ rotate: rotation }}
+                            transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+                            className='flex'
+                        >
+                            <BiTransferAlt />
+                        </motion.span>
                     </Button>
                 </div>
                 <div className='flex'>
@@ -106,7 +129,20 @@ export default function LanguageArea() {
                                 radius='sm'
                                 variant='light'
                             >
-                                {t(`languages.${targetLanguage}`)}
+                                <AnimatePresence
+                                    mode='wait'
+                                    initial={false}
+                                >
+                                    <motion.span
+                                        key={targetLanguage}
+                                        initial={{ opacity: 0, y: -6 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 6 }}
+                                        transition={{ duration: 0.14 }}
+                                    >
+                                        {t(`languages.${targetLanguage}`)}
+                                    </motion.span>
+                                </AnimatePresence>
                             </Button>
                         </DropdownTrigger>
                         <DropdownMenu
