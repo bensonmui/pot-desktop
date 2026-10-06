@@ -1,3 +1,5 @@
 import * as _lingva_tts from './lingva';
+import * as _google_tts from './google';
 
 export const lingva_tts = _lingva_tts;
+export const google_tts = _google_tts;

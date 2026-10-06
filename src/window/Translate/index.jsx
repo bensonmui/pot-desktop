@@ -1,6 +1,6 @@
 import { readDir, BaseDirectory, readTextFile, exists } from '@tauri-apps/api/fs';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import { appWindow, currentMonitor } from '@tauri-apps/api/window';
+import { appWindow, currentMonitor, LogicalSize } from '@tauri-apps/api/window';
 import { appConfigDir, join } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { Spacer, Button } from '@nextui-org/react';
@@ -80,6 +80,7 @@ export default function Translate() {
     const [ttsServiceInstanceList] = useConfig('tts_service_list', ['lingva_tts']);
     const [collectionServiceInstanceList] = useConfig('collection_service_list', []);
     const [hideLanguage] = useConfig('hide_language', false);
+    const [sideBySide] = useConfig('translate_side_by_side', false);
     const [pined, setPined] = useState(false);
     const [pluginList, setPluginList] = useState(null);
     const [serviceInstanceConfigMap, setServiceInstanceConfigMap] = useState(null);
@@ -109,6 +110,24 @@ export default function Translate() {
             setPined(true);
         }
     }, [alwaysOnTop]);
+    // 並排時自動加寬視窗，避免兩欄過窄
+    useEffect(() => {
+        if (!sideBySide) {
+            return;
+        }
+        (async () => {
+            try {
+                const monitor = await currentMonitor();
+                const factor = monitor.scaleFactor;
+                const size = (await appWindow.outerSize()).toLogical(factor);
+                if (size.width < 720) {
+                    await appWindow.setSize(new LogicalSize(720, size.height));
+                }
+            } catch {
+                // ignore
+            }
+        })();
+    }, [sideBySide]);
     // 保存窗口位置
     useEffect(() => {
         if (windowPosition !== null && windowPosition === 'pre_state') {
@@ -228,6 +247,56 @@ export default function Translate() {
         collectionServiceInstanceList,
     ]);
 
+    const targetArea = (
+        <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable
+                droppableId='droppable'
+                direction='vertical'
+            >
+                {(provided) => (
+                    <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                    >
+                        {translateServiceInstanceList !== null &&
+                            serviceInstanceConfigMap !== null &&
+                            translateServiceInstanceList.map((serviceInstanceKey, index) => {
+                                const config = serviceInstanceConfigMap[serviceInstanceKey] ?? {};
+                                const enable = config['enable'] ?? true;
+
+                                return enable ? (
+                                    <Draggable
+                                        key={serviceInstanceKey}
+                                        draggableId={serviceInstanceKey}
+                                        index={index}
+                                    >
+                                        {(provided) => (
+                                            <div
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                            >
+                                                <TargetArea
+                                                    {...provided.dragHandleProps}
+                                                    index={index}
+                                                    name={serviceInstanceKey}
+                                                    translateServiceInstanceList={translateServiceInstanceList}
+                                                    pluginList={pluginList}
+                                                    serviceInstanceConfigMap={serviceInstanceConfigMap}
+                                                />
+                                                <Spacer y={2} />
+                                            </div>
+                                        )}
+                                    </Draggable>
+                                ) : (
+                                    <></>
+                                );
+                            })}
+                    </div>
+                )}
+            </Droppable>
+        </DragDropContext>
+    );
+
     return (
         pluginList && (
             <div
@@ -275,8 +344,8 @@ export default function Translate() {
                     </Button>
                 </div>
                 <div className={`${osType === 'Linux' ? 'h-[calc(100vh-37px)]' : 'h-[calc(100vh-35px)]'} px-[8px]`}>
-                    <div className='h-full overflow-y-auto'>
-                        <div>
+                    <div className={`h-full overflow-y-auto ${sideBySide ? 'flex flex-wrap items-start content-start' : ''}`}>
+                        <div className={sideBySide ? 'w-1/2 min-w-0 order-2 sticky top-0 pr-3 border-r border-default-200' : ''}>
                             {serviceInstanceConfigMap !== null && (
                                 <SourceArea
                                     pluginList={pluginList}
@@ -284,59 +353,17 @@ export default function Translate() {
                                 />
                             )}
                         </div>
-                        <div className={`${hideLanguage && 'hidden'}`}>
+                        <div
+                            className={`sticky top-0 z-20 bg-background ${hideLanguage && 'hidden'} ${
+                                sideBySide ? 'w-full order-1' : ''
+                            }`}
+                        >
                             <LanguageArea />
                             <Spacer y={2} />
                         </div>
-                        <DragDropContext onDragEnd={onDragEnd}>
-                            <Droppable
-                                droppableId='droppable'
-                                direction='vertical'
-                            >
-                                {(provided) => (
-                                    <div
-                                        ref={provided.innerRef}
-                                        {...provided.droppableProps}
-                                    >
-                                        {translateServiceInstanceList !== null &&
-                                            serviceInstanceConfigMap !== null &&
-                                            translateServiceInstanceList.map((serviceInstanceKey, index) => {
-                                                const config = serviceInstanceConfigMap[serviceInstanceKey] ?? {};
-                                                const enable = config['enable'] ?? true;
-
-                                                return enable ? (
-                                                    <Draggable
-                                                        key={serviceInstanceKey}
-                                                        draggableId={serviceInstanceKey}
-                                                        index={index}
-                                                    >
-                                                        {(provided) => (
-                                                            <div
-                                                                ref={provided.innerRef}
-                                                                {...provided.draggableProps}
-                                                            >
-                                                                <TargetArea
-                                                                    {...provided.dragHandleProps}
-                                                                    index={index}
-                                                                    name={serviceInstanceKey}
-                                                                    translateServiceInstanceList={
-                                                                        translateServiceInstanceList
-                                                                    }
-                                                                    pluginList={pluginList}
-                                                                    serviceInstanceConfigMap={serviceInstanceConfigMap}
-                                                                />
-                                                                <Spacer y={2} />
-                                                            </div>
-                                                        )}
-                                                    </Draggable>
-                                                ) : (
-                                                    <></>
-                                                );
-                                            })}
-                                    </div>
-                                )}
-                            </Droppable>
-                        </DragDropContext>
+                        <div className={sideBySide ? 'w-1/2 min-w-0 order-3 pl-3' : ''}>
+                            {targetArea}
+                        </div>
                     </div>
                 </div>
             </div>

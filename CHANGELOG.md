@@ -3,6 +3,21 @@
 本 fork 的變更，中英雙語。
 Notable changes in this fork, in Chinese and English.
 
+## [3.0.17] - 2026-10-06
+
+### Added / 新增
+
+- **服務測試按鈕**：翻譯服務清單每個服務右側新增 **⚡** 測試鈕，按一下送測試句，顯示成功與延遲（或失敗原因），可快速看出哪個服務可用。
+  **Service test button**: each translation service now has a **⚡** test button that sends a test phrase and shows success + latency (or the failure), so you can quickly see which services work.
+- **歷史記錄強化**：新增**搜尋框**（過濾原文／譯文）、**匯出 JSON**（檔案對話框），以及**單筆刪除**。
+  **History improvements**: a **search box** (filters source/result), **export to JSON** (file dialog), and **delete a single entry**.
+- **雙語並排**：翻譯設定新增「**原文與譯文並排**」開關，翻譯視窗改為**左欄原文／右欄翻譯卡**；語言列並改為**固定在頂端**（捲動時不消失）。
+  **Side-by-side**: a new "**Side-by-side source & translation**" toggle in Translate settings lays the window out as **source (left) / results (right)**; the **language bar is now pinned to the top** while scrolling.
+- **新增服務**：**LibreTranslate** 與 **DeepLX**（皆可自訂請求位址；DeepLX 可填存取權杖）。
+  **New services**: **LibreTranslate** and **DeepLX** (both with a configurable request path; DeepLX accepts an access token).
+- **TTS**：新增 **Google TTS**（免 API Key），修補朗讀功能——原本的 Lingva TTS 依賴已離線的公共實例。
+  **TTS**: added **Google TTS** (no API key), fixing read-aloud — the previous Lingva TTS relied on an offline public instance.
+
 ## [3.0.16] - 2026-10-06
 
 ### Added / 新增

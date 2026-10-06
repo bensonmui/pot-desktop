@@ -43,6 +43,10 @@
             "he": "希伯来语"
         },
         "config": {
+                "svc_libretranslate_hint": "请指向你的 LibreTranslate 实例。公共实例（libretranslate.com）现在需要免费 API Key；自架实例通常不需要。",
+                "svc_deeplx_token": "访问令牌（可选）",
+                "svc_deeplx_hint": "请指向你自己的 DeepLX 实例（默认 http://localhost:1188）。",
+                "svc_google_tts_hint": "使用 Google 翻译 TTS，无需 API Key。",
             "svc_request_path": "请求地址",
             "svc_lingva_hint": "预设公共实例经常离线；如有需要，请指向你自己的 Lingva 实例。",
             "svc_custom_headers": "自定义请求头",
@@ -104,6 +108,7 @@
                 }
             },
             "translate": {
+                "side_by_side": "原文与译文并排",
                 "incremental_translate_tip": "开启后，连续复制时会把新文字追加到原文，而不是替换（方便分段收集后一次翻译）。",
                 "dynamic_translate_tip": "开启后，输入时即时翻译（边打字边翻译）。",
                 "delete_newline_tip": "翻译前自动清理文字：去除跨行连字符、合并段落内换行（适合 PDF／OCR 复制的文字）。",
@@ -175,6 +180,8 @@
                 "set_hotkey": "按下按键设置快捷键"
             },
             "service": {
+                "test": "测试",
+                "test_success": "测试成功",
                 "label": "服务设置",
                 "title": "服务设置",
                 "translate": "翻译",
@@ -192,6 +199,11 @@
                 "homepage": "插件主页"
             },
             "history": {
+                "search": "搜索历史记录…",
+                "export": "导出",
+                "export_success": "已导出",
+                "export_failed": "导出失败",
+                "delete": "删除",
                 "label": "历史记录",
                 "title": "历史记录"
             },
@@ -248,6 +260,8 @@
             "no_need": "无需配置",
             "instance_name": "配置名称",
             "translate": {
+                "libretranslate": {"title":"LibreTranslate"},
+                "deeplx": {"title":"DeepLX"},
                 "deepl": {
                     "title": "DeepL",
                     "custom_url": "DeepLX 地址",
@@ -452,6 +466,7 @@
                 }
             },
             "tts": {
+                "google_tts": {"title":"Google"},
                 "lingva_tts": {
                     "title": "Lingva",
                     "request_path": "请求地址"

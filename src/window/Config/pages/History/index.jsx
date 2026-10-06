@@ -1,13 +1,15 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@nextui-org/react';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@nextui-org/react';
-import { readDir, BaseDirectory, readTextFile, exists } from '@tauri-apps/api/fs';
-import { Textarea, Button, ButtonGroup } from '@nextui-org/react';
+import { readDir, BaseDirectory, readTextFile, writeTextFile, exists } from '@tauri-apps/api/fs';
+import { Textarea, Button, ButtonGroup, Input } from '@nextui-org/react';
 import { appConfigDir, join } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
+import { save } from '@tauri-apps/api/dialog';
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { Pagination } from '@nextui-org/react';
 import { useTranslation } from 'react-i18next';
+import { MdDeleteOutline, MdFileDownload } from 'react-icons/md';
 import Database from 'tauri-plugin-sql-api';
 
 import * as builtinCollectionServices from '../../../../services/collection';
@@ -33,27 +35,37 @@ export default function History() {
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [items, setItems] = useState([]);
+    const [query, setQuery] = useState('');
     const toastStyle = useToastStyle();
     const { t } = useTranslation();
     useEffect(() => {
-        init();
         loadPluginList();
     }, []);
 
     useEffect(() => {
-        getData();
-    }, [total, page]);
+        setPage(1);
+        init(query);
+    }, [query]);
 
-    const init = async () => {
+    useEffect(() => {
+        getData(query);
+    }, [total, page, query]);
+
+    const init = async (q = '') => {
         const db = await Database.load('sqlite:history.db');
-        const result = await db.select('SELECT COUNT(*) FROM history');
-        if (result[0] && result[0]['COUNT(*)']) {
-            setTotal(result[0]['COUNT(*)']);
-        }
+        const result = q
+            ? await db.select('SELECT COUNT(*) FROM history WHERE text LIKE $1 OR result LIKE $1', [`%${q}%`])
+            : await db.select('SELECT COUNT(*) FROM history');
+        setTotal((result[0] && result[0]['COUNT(*)']) || 0);
     };
-    const getData = async () => {
+    const getData = async (q = '') => {
         const db = await Database.load('sqlite:history.db');
-        let result = await db.select('SELECT * FROM history ORDER BY id DESC LIMIT 20 OFFSET $1', [20 * (page - 1)]);
+        let result = q
+            ? await db.select('SELECT * FROM history WHERE text LIKE $1 OR result LIKE $1 ORDER BY id DESC LIMIT 20 OFFSET $2', [
+                  `%${q}%`,
+                  20 * (page - 1),
+              ])
+            : await db.select('SELECT * FROM history ORDER BY id DESC LIMIT 20 OFFSET $1', [20 * (page - 1)]);
         setItems(result);
     };
 
@@ -70,6 +82,12 @@ export default function History() {
         setTotal(0);
         setPage(1);
     };
+    const deleteData = async (id) => {
+        const db = await Database.load('sqlite:history.db');
+        await db.execute('DELETE FROM history WHERE id=$1', [id]);
+        await init(query);
+        await getData(query);
+    };
     const updateData = async () => {
         const db = await Database.load('sqlite:history.db');
         await db.execute('UPDATE history SET text=$1, result=$2 WHERE id=$3', [
@@ -77,7 +95,24 @@ export default function History() {
             selectedItem.result,
             selectedItem.id,
         ]);
-        await getData();
+        await getData(query);
+    };
+    const exportData = async () => {
+        try {
+            const db = await Database.load('sqlite:history.db');
+            const rows = await db.select('SELECT * FROM history ORDER BY id DESC');
+            const path = await save({
+                defaultPath: `pot-history-${new Date().toISOString().slice(0, 10)}.json`,
+                filters: [{ name: 'JSON', extensions: ['json'] }],
+            });
+            if (!path) {
+                return;
+            }
+            await writeTextFile(path, JSON.stringify(rows, null, 2));
+            toast.success(`${t('config.history.export_success')} (${rows.length})`, { style: toastStyle });
+        } catch (e) {
+            toast.error(`${t('config.history.export_failed')}: ${String(e)}`, { style: toastStyle });
+        }
     };
 
     const formatDate = (date) => {
@@ -123,6 +158,24 @@ export default function History() {
         pluginList !== null && (
             <>
                 <Toaster />
+                <div className='flex items-center justify-between mb-[8px]'>
+                    <Input
+                        size='sm'
+                        className='max-w-[320px]'
+                        isClearable
+                        placeholder={t('config.history.search')}
+                        value={query}
+                        onValueChange={setQuery}
+                    />
+                    <Button
+                        size='sm'
+                        variant='flat'
+                        startContent={<MdFileDownload />}
+                        onPress={exportData}
+                    >
+                        {t('config.history.export')}
+                    </Button>
+                </div>
                 <Table
                     fullWidth
                     hideHeader
@@ -131,7 +184,7 @@ export default function History() {
                     aria-label='History Table'
                     classNames={{
                         base: `${
-                            osType === 'Linux' ? 'h-[calc(100vh-130px)]' : 'h-[calc(100vh-100px)]'
+                            osType === 'Linux' ? 'h-[calc(100vh-170px)]' : 'h-[calc(100vh-140px)]'
                         } overflow-y-auto`,
                         td: 'px-0',
                     }}
@@ -272,15 +325,29 @@ export default function History() {
                                         />
                                     </ModalBody>
                                     <ModalFooter className='flex justify-between'>
-                                        <Button
-                                            color='primary'
-                                            onPress={async () => {
-                                                await updateData();
-                                                onClose();
-                                            }}
-                                        >
-                                            {t('common.save')}
-                                        </Button>
+                                        <div className='flex'>
+                                            <Button
+                                                color='primary'
+                                                onPress={async () => {
+                                                    await updateData();
+                                                    onClose();
+                                                }}
+                                            >
+                                                {t('common.save')}
+                                            </Button>
+                                            <Button
+                                                color='danger'
+                                                variant='light'
+                                                className='ml-[8px]'
+                                                startContent={<MdDeleteOutline />}
+                                                onPress={async () => {
+                                                    await deleteData(selectedItem.id);
+                                                    onClose();
+                                                }}
+                                            >
+                                                {t('config.history.delete')}
+                                            </Button>
+                                        </div>
                                         <ButtonGroup>
                                             {collectionServiceList &&
                                                 collectionServiceList.map((instanceKey) => {

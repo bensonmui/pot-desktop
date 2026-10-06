@@ -43,6 +43,10 @@
             "he": "Hebrew"
         },
         "config": {
+                "svc_libretranslate_hint": "Point this at a LibreTranslate instance. The public one (libretranslate.com) now needs a free API key; a self-hosted instance usually needs none.",
+                "svc_deeplx_token": "Access Token (optional)",
+                "svc_deeplx_hint": "Point this at your own DeepLX instance (default http://localhost:1188).",
+                "svc_google_tts_hint": "Uses Google Translate TTS. No API key required.",
             "svc_request_path": "Request Path",
             "svc_lingva_hint": "The default public instance is often offline. Point this to your own Lingva instance if needed.",
             "svc_custom_headers": "Custom Headers",
@@ -104,6 +108,7 @@
                 }
             },
             "translate": {
+                "side_by_side": "Side-by-side source & translation",
                 "incremental_translate_tip": "When on, newly copied text is appended to the source instead of replacing it (collect several pieces, then translate once).",
                 "dynamic_translate_tip": "When on, text is translated as you type.",
                 "delete_newline_tip": "Clean the text before translating: remove hyphenation across line breaks and join lines within a paragraph (great for PDF/OCR text).",
@@ -176,6 +181,8 @@
                 "set_hotkey": "Press to Set Hotkey"
             },
             "service": {
+                "test": "Test",
+                "test_success": "Test OK",
                 "label": "Service",
                 "title": "Service Settings",
                 "translate": "Translate",
@@ -193,6 +200,11 @@
                 "homepage": "Homepage"
             },
             "history": {
+                "search": "Search history…",
+                "export": "Export",
+                "export_success": "Exported",
+                "export_failed": "Export failed",
+                "delete": "Delete",
                 "label": "History",
                 "title": "History"
             },
@@ -249,6 +261,8 @@
             "no_need": "No configuration required",
             "instance_name": "Configuration Name",
             "translate": {
+                "libretranslate": {"title":"LibreTranslate"},
+                "deeplx": {"title":"DeepLX"},
                 "deepl": {
                     "title": "DeepL",
                     "custom_url": "DeepLX URL",
@@ -453,6 +467,7 @@
                 }
             },
             "tts": {
+                "google_tts": {"title":"Google"},
                 "lingva_tts": {
                     "title": "Lingva",
                     "request_path": "Request Path"

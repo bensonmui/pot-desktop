@@ -1,0 +1,36 @@
+export const info = {
+    name: 'deeplx',
+    icon: 'logo/deeplx.svg',
+    display: 'DeepLX',
+};
+
+// DeepLX (DeepL-compatible) uses upper-case language codes.
+export enum Language {
+    auto = 'auto',
+    zh_cn = 'ZH',
+    zh_tw = 'ZH-HANT',
+    ja = 'JA',
+    en = 'EN',
+    ko = 'KO',
+    fr = 'FR',
+    es = 'ES',
+    ru = 'RU',
+    de = 'DE',
+    it = 'IT',
+    tr = 'TR',
+    pt_pt = 'PT-PT',
+    pt_br = 'PT-BR',
+    vi = 'VI',
+    id = 'ID',
+    th = 'TH',
+    ms = 'MS',
+    ar = 'AR',
+    hi = 'HI',
+    nb_no = 'NB',
+    fa = 'FA',
+    sv = 'SV',
+    pl = 'PL',
+    nl = 'NL',
+    uk = 'UK',
+    he = 'HE',
+}

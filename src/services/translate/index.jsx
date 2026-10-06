@@ -22,6 +22,8 @@ import * as _lingva from './lingva';
 import * as _mymemory from './mymemory';
 import * as _auto from './auto';
 import * as _papago from './papago';
+import * as _libretranslate from './libretranslate';
+import * as _deeplx from './deeplx';
 
 export const deepl = _deepl;
 export const bing = _bing;
@@ -47,3 +49,5 @@ export const lingva = _lingva;
 export const mymemory = _mymemory;
 export const auto = _auto;
 export const papago = _papago;
+export const libretranslate = _libretranslate;
+export const deeplx = _deeplx;

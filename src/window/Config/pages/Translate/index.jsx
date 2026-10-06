@@ -50,6 +50,7 @@ export default function Translate() {
     const [hideSource, setHideSource] = useConfig('hide_source', false);
     const [hideLanguage, setHideLanguage] = useConfig('hide_language', false);
     const [hideWindow, setHideWindow] = useConfig('translate_hide_window', false);
+    const [sideBySide, setSideBySide] = useConfig('translate_side_by_side', false);
     const [closeOnBlur, setCloseOnBlur] = useConfig('translate_close_on_blur', true);
     const [alwaysOnTop, setAlwaysOnTop] = useConfig('translate_always_on_top', false);
     const { t } = useTranslation();
@@ -381,6 +382,17 @@ export default function Translate() {
                                 isSelected={hideWindow}
                                 onValueChange={(v) => {
                                     setHideWindow(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.side_by_side')}</h3>
+                        {sideBySide !== null && (
+                            <Switch
+                                isSelected={sideBySide}
+                                onValueChange={(v) => {
+                                    setSideBySide(v);
                                 }}
                             />
                         )}
