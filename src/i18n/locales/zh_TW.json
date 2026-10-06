@@ -104,6 +104,11 @@
                 "dev_mode": "開發者模式"
             },
             "translate": {
+                "incremental_translate_tip": "開啟後，連續複製時會把新文字接續到原文，而不是取代（方便分段收集後一次翻譯）。",
+                "dynamic_translate_tip": "開啟後，輸入時即時翻譯（邊打字邊翻）。",
+                "delete_newline_tip": "翻譯前自動清理文字：去除跨行連字號、合併段落內換行（適合 PDF／OCR 複製的文字）。",
+                "translation_cache_tip": "相同文字在短時間內重複翻譯時，直接使用上次結果（更快、省額度）。",
+                "render_markdown_tip": "把翻譯結果以 Markdown 呈現（標題、清單、程式碼；支援 LaTeX 數學公式）。",
                 "label": "翻譯設定",
                 "title": "翻譯設定",
                 "source_language": "原文語言",

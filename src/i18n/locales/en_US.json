@@ -104,6 +104,11 @@
                 }
             },
             "translate": {
+                "incremental_translate_tip": "When on, newly copied text is appended to the source instead of replacing it (collect several pieces, then translate once).",
+                "dynamic_translate_tip": "When on, text is translated as you type.",
+                "delete_newline_tip": "Clean the text before translating: remove hyphenation across line breaks and join lines within a paragraph (great for PDF/OCR text).",
+                "translation_cache_tip": "Reuse the previous result when the same text is translated again shortly after (faster, saves quota).",
+                "render_markdown_tip": "Render the result as Markdown (headings, lists, code; LaTeX math supported).",
                 "label": "Translate",
                 "title": "Translation Settings",
                 "source_language": "Source Language",

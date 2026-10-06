@@ -23,6 +23,7 @@
 - **LaTeX rendering** (KaTeX for `$...$` / `$$...$$` math when Markdown is on).
 - **Per-card service memory** (a card's service choice is remembered across sessions).
 - **Configurable Lingva instance** (point it at a self-hosted instance; the public one is offline).
+- **Setting info tooltips** (ⓘ icons on 5 toggles in the Translate settings page).
 
 **Fixed**
 - **Language detection delay** — defaults to local (offline) detection; remote engines time out and fall back, so a slow or blocked endpoint no longer delays translation.

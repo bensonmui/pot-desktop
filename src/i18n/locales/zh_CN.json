@@ -104,6 +104,11 @@
                 }
             },
             "translate": {
+                "incremental_translate_tip": "开启后，连续复制时会把新文字追加到原文，而不是替换（方便分段收集后一次翻译）。",
+                "dynamic_translate_tip": "开启后，输入时即时翻译（边打字边翻译）。",
+                "delete_newline_tip": "翻译前自动清理文字：去除跨行连字符、合并段落内换行（适合 PDF／OCR 复制的文字）。",
+                "translation_cache_tip": "相同文字在短时间内重复翻译时，直接使用上次结果（更快、省额度）。",
+                "render_markdown_tip": "把翻译结果以 Markdown 呈现（标题、列表、代码；支持 LaTeX 数学公式）。",
                 "label": "翻译设置",
                 "title": "翻译设置",
                 "source_language": "源语言",

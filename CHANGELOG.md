@@ -3,6 +3,13 @@
 本 fork 的變更，中英雙語。
 Notable changes in this fork, in Chinese and English.
 
+## [3.0.16] - 2026-10-06
+
+### Added / 新增
+
+- **設定說明圖示**：翻譯設定頁在較不直觀的開關（**增量翻譯、動態翻譯、自動刪除換行、翻譯快取、渲染 Markdown**）左側新增 **ⓘ** 圖示，滑過去顯示作用說明（en / zh_CN / zh_TW）。
+  **Setting info icons**: on the Translate settings page, the less obvious toggles (**incremental translate, dynamic translate, auto-remove line breaks, translation cache, Markdown rendering**) now have an **ⓘ** icon on their left; hover it for an explanation (en / zh_CN / zh_TW).
+
 ## [3.0.15] - 2026-10-06
 
 ### Added / 新增

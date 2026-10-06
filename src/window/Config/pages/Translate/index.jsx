@@ -7,11 +7,29 @@ import { Dropdown } from '@nextui-org/react';
 import { Switch } from '@nextui-org/react';
 import { Button } from '@nextui-org/react';
 import { Card } from '@nextui-org/react';
+import { Tooltip } from '@nextui-org/react';
 import React from 'react';
 
 import { languageList } from '../../../../utils/language';
 import { useConfig } from '../../../../hooks/useConfig';
 import { invoke } from '@tauri-apps/api';
+import { BiInfoCircle } from 'react-icons/bi';
+
+function Tip({ content }) {
+    return (
+        <Tooltip
+            content={content}
+            className='max-w-[280px]'
+        >
+            <span className='flex items-center'>
+                <BiInfoCircle
+                    className='text-default-400 hover:text-default-600 cursor-help'
+                    size={16}
+                />
+            </span>
+        </Tooltip>
+    );
+}
 
 export default function Translate() {
     const [sourceLanguage, setSourceLanguage] = useConfig('translate_source_language', 'auto');
@@ -172,56 +190,71 @@ export default function Translate() {
                     <div className='config-item'>
                         <h3 className='my-auto mx-0'>{t('config.translate.incremental_translate')}</h3>
                         {incrementalTranslate !== null && (
-                            <Switch
-                                isSelected={incrementalTranslate}
-                                onValueChange={(v) => {
-                                    setIncrementalTranslate(v);
-                                }}
-                            />
+                            <div className='flex items-center gap-2'>
+                                <Tip content={t('config.translate.incremental_translate_tip')} />
+                                <Switch
+                                    isSelected={incrementalTranslate}
+                                    onValueChange={(v) => {
+                                        setIncrementalTranslate(v);
+                                    }}
+                                />
+                            </div>
                         )}
                     </div>
                     <div className='config-item'>
                         <h3 className='my-auto mx-0'>{t('config.translate.dynamic_translate')}</h3>
                         {dynamicTranslate !== null && (
-                            <Switch
-                                isSelected={dynamicTranslate}
-                                onValueChange={(v) => {
-                                    setDynamicTranslate(v);
-                                }}
-                            />
+                            <div className='flex items-center gap-2'>
+                                <Tip content={t('config.translate.dynamic_translate_tip')} />
+                                <Switch
+                                    isSelected={dynamicTranslate}
+                                    onValueChange={(v) => {
+                                        setDynamicTranslate(v);
+                                    }}
+                                />
+                            </div>
                         )}
                     </div>
                     <div className='config-item'>
                         <h3 className='my-auto mx-0'>{t('config.translate.delete_newline')}</h3>
                         {deleteNewline !== null && (
-                            <Switch
-                                isSelected={deleteNewline}
-                                onValueChange={(v) => {
-                                    setDeleteNewline(v);
-                                }}
-                            />
+                            <div className='flex items-center gap-2'>
+                                <Tip content={t('config.translate.delete_newline_tip')} />
+                                <Switch
+                                    isSelected={deleteNewline}
+                                    onValueChange={(v) => {
+                                        setDeleteNewline(v);
+                                    }}
+                                />
+                            </div>
                         )}
                     </div>
                     <div className='config-item'>
                         <h3 className='my-auto mx-0'>{t('config.translate.translation_cache')}</h3>
                         {translateCache !== null && (
-                            <Switch
-                                isSelected={translateCache}
-                                onValueChange={(v) => {
-                                    setTranslateCache(v);
-                                }}
-                            />
+                            <div className='flex items-center gap-2'>
+                                <Tip content={t('config.translate.translation_cache_tip')} />
+                                <Switch
+                                    isSelected={translateCache}
+                                    onValueChange={(v) => {
+                                        setTranslateCache(v);
+                                    }}
+                                />
+                            </div>
                         )}
                     </div>
                     <div className='config-item'>
                         <h3 className='my-auto mx-0'>{t('config.translate.render_markdown')}</h3>
                         {markdownRender !== null && (
-                            <Switch
-                                isSelected={markdownRender}
-                                onValueChange={(v) => {
-                                    setMarkdownRender(v);
-                                }}
-                            />
+                            <div className='flex items-center gap-2'>
+                                <Tip content={t('config.translate.render_markdown_tip')} />
+                                <Switch
+                                    isSelected={markdownRender}
+                                    onValueChange={(v) => {
+                                        setMarkdownRender(v);
+                                    }}
+                                />
+                            </div>
                         )}
                     </div>
                     <div className='config-item'>
