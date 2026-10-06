@@ -11,6 +11,9 @@
 
 **추가**
 - **MyMemory** 번역 서비스 (무료, API 키 불필요) — 추가 대체 수단.
+- **Auto (대체)** 번역 서비스 — Google → Bing → MyMemory 순서로 시도.
+- **모델 선택** (OpenAI 호환 서비스, `/v1/models` 자동 로드).
+- **자동 업데이트** (Windows x64) 및 **추가 빌드 대상** (Windows x86/arm64, macOS, Linux).
 
 **수정**
 - **긴 텍스트** — Bing은 이제 입력을 약 1000자 단위로 나누어 번역합니다 (웹 엔드포인트는 더 긴 텍스트를 `statusCode 400`으로 거부).

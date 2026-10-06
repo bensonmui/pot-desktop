@@ -11,6 +11,9 @@
 
 **Added**
 - **MyMemory** translation service (free, no API key) as an extra fallback.
+- **Auto (fallback)** translation service — tries Google → Bing → MyMemory and returns the first success.
+- **Model picker** for OpenAI-compatible services (reads `/v1/models`).
+- **Auto-update** (Windows x64) and **more build targets** (Windows x86/arm64, macOS, Linux).
 
 **Fixed**
 - **Long text** — Bing now splits input into ~1000-character chunks and joins the results (its web endpoint rejects longer text with `statusCode 400`).

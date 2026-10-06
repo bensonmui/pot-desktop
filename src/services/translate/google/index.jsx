@@ -119,10 +119,45 @@ async function translateViaClients5(text, from, to) {
 // the primary endpoint fails we stop trying it and use the fallback directly.
 let primaryUnavailable = false;
 
-export async function translate(text, from, to, options = {}) {
-    const { config } = options;
-    const custom_url = resolveCustomUrl(config.custom_url);
+const MAX_CHUNK = 4000;
 
+function chunkText(text, limit = MAX_CHUNK) {
+    if (text.length <= limit) {
+        return [text];
+    }
+    const boundaries = '\n.!?。！？；;';
+    const chunks = [];
+    let remaining = text;
+    const min = Math.floor(limit * 0.6);
+    while (remaining.length > limit) {
+        let cut = -1;
+        for (let i = limit; i > min; i--) {
+            if (boundaries.includes(remaining[i - 1])) {
+                cut = i;
+                break;
+            }
+        }
+        if (cut === -1) {
+            for (let i = limit; i > min; i--) {
+                if (/\s/.test(remaining[i - 1])) {
+                    cut = i;
+                    break;
+                }
+            }
+        }
+        if (cut === -1) {
+            cut = limit;
+        }
+        chunks.push(remaining.slice(0, cut));
+        remaining = remaining.slice(cut);
+    }
+    if (remaining) {
+        chunks.push(remaining);
+    }
+    return chunks;
+}
+
+async function translateOne(text, from, to, custom_url) {
     if (!primaryUnavailable) {
         try {
             return await translateViaSingle(custom_url, text, from, to);
@@ -131,6 +166,22 @@ export async function translate(text, from, to, options = {}) {
         }
     }
     return await translateViaClients5(text, from, to);
+}
+
+export async function translate(text, from, to, options = {}) {
+    const { config } = options;
+    const custom_url = resolveCustomUrl(config.custom_url);
+
+    const chunks = chunkText(text, MAX_CHUNK);
+    if (chunks.length === 1) {
+        return await translateOne(text, from, to, custom_url);
+    }
+
+    const results = [];
+    for (const chunk of chunks) {
+        results.push(await translateOne(chunk, from, to, custom_url));
+    }
+    return results.join('');
 }
 
 export * from './Config';

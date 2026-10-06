@@ -12,42 +12,76 @@ permissions:
 jobs:
     windows:
         runs-on: windows-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - target: x86_64-pc-windows-msvc
+                      bundles: nsis,updater
+                    - target: i686-pc-windows-msvc
+                      bundles: nsis
+                    - target: aarch64-pc-windows-msvc
+                      bundles: nsis
         steps:
             - uses: actions/checkout@v4
-
-            - name: Setup Node
-              uses: actions/setup-node@v4
+            - uses: actions/setup-node@v4
               with:
                   node-version: 21
-
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v4
               with:
                   version: 9
-
-            - name: Install Rust
-              uses: dtolnay/rust-toolchain@stable
-
-            - name: Rust cache
-              uses: swatinem/rust-cache@v2
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: ${{ matrix.target }}
+            - uses: swatinem/rust-cache@v2
               with:
                   workspaces: src-tauri
-
-            - name: Install dependencies
-              run: pnpm install
-
-            - name: Build (NSIS)
-              run: pnpm tauri build -b nsis
-
-            - name: Upload artifact
+                  key: ${{ matrix.target }}
+            - run: pnpm install
+            - name: Build
+              shell: pwsh
+              run: pnpm tauri build -b ${{ matrix.bundles }} --target ${{ matrix.target }}
+              env:
+                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+            - name: Generate updater manifest (x64 only)
+              if: matrix.target == 'x86_64-pc-windows-msvc' && startsWith(github.ref, 'refs/tags/')
+              run: node updater/updater.mjs
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: windows-${{ matrix.target }}
+                  path: |
+                      src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe
+                      src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.zip
+                      src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.sig
+                  if-no-files-found: warn
+            - name: Upload updater manifest
+              if: matrix.target == 'x86_64-pc-windows-msvc' && startsWith(github.ref, 'refs/tags/')
               uses: actions/upload-artifact@v4
               with:
-                  name: windows-x64-setup
-                  path: src-tauri/target/release/bundle/nsis/*.exe
-                  if-no-files-found: error
-
+                  name: update-json
+                  path: update.json
+                  if-no-files-found: warn
             - name: Attach to release
               if: startsWith(github.ref, 'refs/tags/')
               uses: softprops/action-gh-release@v2
               with:
-                  files: src-tauri/target/release/bundle/nsis/*.exe
+                  files: |
+                      src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*setup*.exe
+                      src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*setup*.nsis.zip
+                      src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*setup*.nsis.zip.sig
+
+    publish-updater:
+        needs: windows
+        if: startsWith(github.ref, 'refs/tags/')
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/download-artifact@v4
+              with:
+                  name: update-json
+            - name: Publish updater manifest
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: updater
+                  name: updater
+                  files: update.json

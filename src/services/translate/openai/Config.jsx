@@ -7,7 +7,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from '@nextui-org/react';
 import { open } from '@tauri-apps/api/shell';
-import React, { useState } from 'react';
+import { fetch as tauriFetch } from '@tauri-apps/api/http';
+import React, { useEffect, useState } from 'react';
 
 import { useConfig } from '../../../hooks/useConfig';
 import { useToastStyle } from '../../../hooks';
@@ -70,6 +71,45 @@ export function Config(props) {
     }
 
     const [isLoading, setIsLoading] = useState(false);
+    const [models, setModels] = useState([]);
+    const [modelsLoading, setModelsLoading] = useState(false);
+
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                if (!openaiConfig || !openaiConfig.apiKey) {
+                    return;
+                }
+                const url = String(openaiConfig.requestPath || '').replace(/\/chat\/completions.*$/, '/models');
+                if (!/^https?:/.test(url)) {
+                    return;
+                }
+                if (!cancelled) {
+                    setModelsLoading(true);
+                }
+                const res = await tauriFetch(url, {
+                    method: 'GET',
+                    headers:
+                        openaiConfig.service === 'azure'
+                            ? { 'api-key': openaiConfig.apiKey }
+                            : { Authorization: `Bearer ${openaiConfig.apiKey}` },
+                });
+                if (!cancelled && res.ok && res.data && Array.isArray(res.data.data)) {
+                    setModels(res.data.data.map((m) => m.id));
+                }
+            } catch {
+                // ignore; the model can still be typed manually
+            } finally {
+                if (!cancelled) {
+                    setModelsLoading(false);
+                }
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [openaiConfig && openaiConfig.requestPath, openaiConfig && openaiConfig.apiKey, openaiConfig && openaiConfig.service]);
 
     const toastStyle = useToastStyle();
 
@@ -243,6 +283,33 @@ export function Config(props) {
                             });
                         }}
                     />
+                </div>
+                <div className={`config-item ${openaiConfig.service === 'azure' && 'hidden'}`}>
+                    <h3 className='my-auto'>{t('services.translate.openai.model')}</h3>
+                    <Dropdown>
+                        <DropdownTrigger>
+                            <Button
+                                variant='bordered'
+                                isLoading={modelsLoading}
+                            >
+                                {models.length ? `Models (${models.length})` : 'Load models'}
+                            </Button>
+                        </DropdownTrigger>
+                        <DropdownMenu
+                            aria-label='models'
+                            className='max-h-[50vh] overflow-y-auto'
+                            onAction={(key) => {
+                                setOpenaiConfig({
+                                    ...openaiConfig,
+                                    model: key,
+                                });
+                            }}
+                        >
+                            {models.map((m) => (
+                                <DropdownItem key={m}>{m}</DropdownItem>
+                            ))}
+                        </DropdownMenu>
+                    </Dropdown>
                 </div>
                 <h3 className='my-auto'>Prompt List</h3>
                 <p className='text-[10px] text-default-700'>{t('services.translate.openai.prompt_description')}</p>

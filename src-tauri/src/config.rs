@@ -81,6 +81,7 @@ pub fn check_service_available() -> Result<(), Error> {
         "ecdict",
         "lingva",
         "mymemory",
+        "auto",
         "geminipro",
         "niutrans",
         "ollama",

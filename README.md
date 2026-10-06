@@ -11,6 +11,9 @@
 
 **新增**
 - **MyMemory** 翻譯服務（免費、免 API Key），作為額外後備。
+- **Auto（自動回退）**服務 — Google → Bing → MyMemory 依序嘗試，第一個成功即回。
+- **模型下拉選單**（OpenAI 相容服務，自動讀取 `/v1/models`）。
+- **自動更新**（Windows x64）與**更多建置目標**（Windows x86/arm64、macOS、Linux）。
 
 **修正**
 - **長文翻譯** — Bing 現在會自動把長文切成約 1000 字分段再合併（其網頁端點超過會回 `statusCode 400`）。
