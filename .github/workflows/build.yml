@@ -84,4 +84,5 @@ jobs:
               with:
                   tag_name: updater
                   name: updater
+                  prerelease: true
                   files: update.json

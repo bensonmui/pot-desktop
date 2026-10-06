@@ -57,7 +57,6 @@ if (Object.keys(platforms).length === 0) {
 
 const updateData = {
     version,
-    name: version,
     notes: `See https://github.com/${repo}/releases/tag/${tag}`,
     pub_date: new Date().toISOString(),
     platforms,
