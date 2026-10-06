@@ -20,10 +20,8 @@ import { invoke_plugin } from '../../../../utils/invoke_plugin';
 import * as recognizeServices from '../../../../services/recognize';
 import * as builtinTtsServices from '../../../../services/tts';
 import detect from '../../../../utils/lang_detect';
-import { store } from '../../../../utils/store';
 import { cleanText, appendText } from '../../../../utils/text';
 import { info } from 'tauri-plugin-log-api';
-import { debug } from 'tauri-plugin-log-api';
 
 export const sourceTextAtom = atom('');
 export const detectLanguageAtom = atom('');

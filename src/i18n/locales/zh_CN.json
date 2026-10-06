@@ -176,6 +176,7 @@
                 "hide_window": "隐藏识别窗口"
             },
             "hotkey": {
+                "failed": "快捷键注册失败（可能与其他应用冲突）：{{error}}",
                 "label": "热键设置",
                 "title": "热键设置",
                 "selection_translate": "划词翻译",

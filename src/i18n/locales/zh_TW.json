@@ -176,6 +176,7 @@
                 "hide_window": "隱藏辨識視窗"
             },
             "hotkey": {
+                "failed": "快捷鍵註冊失敗（可能與其他應用衝突）：{{error}}",
                 "label": "快速鍵設定",
                 "title": "快速鍵設定",
                 "selection_translate": "選取翻譯",
@@ -267,6 +268,7 @@
             "no_need": "無需設定",
             "instance_name": "配置名稱",
             "translate": {
+                "ecdict": {"title":"ECDict(線上)"},
                 "libretranslate": {"title":"LibreTranslate"},
                 "deeplx": {"title":"DeepLX"},
                 "deepl": {

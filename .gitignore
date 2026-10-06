@@ -12,6 +12,13 @@ dist
 dist-ssr
 *.local
 
+# Secrets / keys（保險：避免誤 commit）
+.env
+.env.*
+*.key
+*.pem
+*.p12
+
 # Editor directories and files
 .idea
 .DS_Store

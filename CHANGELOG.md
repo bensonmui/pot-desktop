@@ -3,6 +3,18 @@
 本 fork 的變更，中英雙語。
 Notable changes in this fork, in Chinese and English.
 
+## [3.0.20] - 2026-10-06
+
+### Fixed / 修正
+
+- **缺漏的翻譯文字**：補上 `config.hotkey.failed`（快捷鍵註冊失敗提示，zh_CN / zh_TW）與 `services.translate.ecdict.title`（zh_TW），避免介面顯示原始 key。
+  **Missing translations**: added `config.hotkey.failed` (hotkey registration failure message, zh_CN / zh_TW) and `services.translate.ecdict.title` (zh_TW) so raw keys are no longer shown.
+
+### Changed / 調整
+
+- **清理**：移除 `SourceArea` 未使用的 import；`.gitignore` 加入 `.env`、`.env.*`、`*.key`、`*.pem`、`*.p12`（避免誤 commit 金鑰）。
+  **Cleanup**: removed unused imports in `SourceArea`; `.gitignore` now ignores `.env`, `.env.*`, `*.key`, `*.pem`, `*.p12` (prevents accidental key commits).
+
 ## [3.0.19] - 2026-10-06
 
 ### Changed / 調整
