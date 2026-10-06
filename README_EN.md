@@ -20,8 +20,12 @@
 - **Auto (fallback)** translation service — tries Google → Bing → MyMemory and returns the first success.
 - **Model picker** for OpenAI-compatible services (reads `/v1/models`).
 - **Auto-update** (Windows x64) and **more build targets** (Windows x86/arm64, macOS, Linux).
+- **LaTeX rendering** (KaTeX for `$...$` / `$$...$$` math when Markdown is on).
+- **Per-card service memory** (a card's service choice is remembered across sessions).
+- **Configurable Lingva instance** (point it at a self-hosted instance; the public one is offline).
 
 **Fixed**
+- **Language detection delay** — defaults to local (offline) detection; remote engines time out and fall back, so a slow or blocked endpoint no longer delays translation.
 - **PDF / OCR text cleaning** — de-hyphenates words split across line breaks, joins lines inside a paragraph, and preserves paragraph breaks.
 - **Long text** — Bing now splits input into ~1000-character chunks and joins the results (its web endpoint rejects longer text with `statusCode 400`).
 - **Google Translate** — falls back to a working endpoint when `translate.google.com` is rate-limited (HTTP 429).

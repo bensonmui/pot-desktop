@@ -312,11 +312,8 @@ export function Config(props) {
                         </DropdownMenu>
                     </Dropdown>
                 </div>
-                <h3 className='my-auto'>Custom Headers</h3>
-                <p className='text-[10px] text-default-700'>
-                    One per line as <code>Header: Value</code>, or a JSON object. Applied to every request (e.g. session or
-                    referer headers some endpoints require).
-                </p>
+                <h3 className='my-auto'>{t('config.svc_custom_headers')}</h3>
+                <p className='text-[10px] text-default-700'>{t('config.svc_custom_headers_hint')}</p>
                 <div className='config-item'>
                     <Textarea
                         label=''

@@ -65,18 +65,18 @@ export function Config(props) {
                     />
                 </div>
                 <div className='config-item'>
-                    <h3 className='my-auto'>Naver API Key</h3>
+                    <h3 className='my-auto'>{t('config.svc_naver_key')}</h3>
                     <Button
                         onPress={() => {
                             open('https://developers.naver.com/apps/#/register');
                         }}
                     >
-                        Get a free key
+                        {t('config.svc_get_free_key')}
                     </Button>
                 </div>
                 <div className='config-item'>
                     <Input
-                        label='Client ID'
+                        label={t('config.svc_client_id')}
                         labelPlacement='outside-left'
                         value={config['clientId']}
                         variant='bordered'
@@ -92,7 +92,7 @@ export function Config(props) {
                 </div>
                 <div className='config-item'>
                     <Input
-                        label='Client Secret'
+                        label={t('config.svc_client_secret')}
                         labelPlacement='outside-left'
                         type='password'
                         value={config['clientSecret']}

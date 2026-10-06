@@ -3,6 +3,24 @@
 本 fork 的變更，中英雙語。
 Notable changes in this fork, in Chinese and English.
 
+## [3.0.15] - 2026-10-06
+
+### Added / 新增
+
+- **LaTeX 渲染**：開啟 Markdown 渲染時，`$...$` 與 `$$...$$` 公式會以 KaTeX 呈現（適合技術文件、論文）。
+  **LaTeX rendering**: with Markdown rendering on, `$...$` and `$$...$$` math is rendered with KaTeX (useful for technical docs and papers).
+- **每張卡片記住翻譯服務**：在卡片標題的服務下拉切換後，該卡片的選擇會被記住，下次開啟仍保留。
+  **Per-card service memory**: after switching a card's service via its header dropdown, the choice is remembered across sessions.
+- **Lingva 可設定實例**：Lingva 服務新增「請求位址」，可指向自架或可用的 Lingva 相容實例（官方公共實例已離線）。
+  **Configurable Lingva instance**: the Lingva service gains a "Request Path" setting to point at a self-hosted or working instance (the public instance is offline).
+
+### Fixed / 修正
+
+- **語言偵測延遲**：預設改用**本機（離線）偵測**；線上偵測引擎加上**逾時並回退**到本機／啟發式，避免慢或被封的端點（例如用 Google 偵測時被 429）拖延翻譯。先前截圖 OCR／截圖翻譯會因此約延遲 2 秒才開始翻譯。
+  **Language detection delay**: default to **local (offline) detection**; remote engines now **time out and fall back** to local / heuristic, so a slow or blocked endpoint (e.g. Google returning 429) no longer delays translation. This previously added ~2s before screenshot OCR / translate started.
+- **介面中英混雜**：新增的設定與服務標籤（剪貼簿監聽、翻譯快取、Markdown、自訂標頭、Papago 欄位等）改為可翻譯（已加 en / zh_CN / zh_TW）。
+  **Mixed-language UI**: new settings and service labels (clipboard monitor, translation cache, Markdown, custom headers, Papago fields, …) are now translatable (en / zh_CN / zh_TW added).
+
 ## [3.0.13] - 2026-10-06
 
 ### Added / 新增

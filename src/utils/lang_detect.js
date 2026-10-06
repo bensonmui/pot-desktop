@@ -310,25 +310,76 @@ async function local_detect(text) {
     return await invoke('lang_detect', { text: text });
 }
 
-export default async function detect(text) {
-    let langDetectEngine = (await store.get('translate_detect_engine')) ?? 'baidu';
+// Instant, offline fallback based on the writing system (used when a remote
+// engine is slow or blocked, so translation is never delayed for long).
+function heuristic_detect(text) {
+    const t = text || '';
+    if (/[\u3040-\u30ff]/.test(t)) {
+        return 'ja';
+    }
+    if (/[\uac00-\ud7af]/.test(t)) {
+        return 'ko';
+    }
+    if (/[\u4e00-\u9fff]/.test(t)) {
+        return 'zh_cn';
+    }
+    if (/[\u0400-\u04ff]/.test(t)) {
+        return 'ru';
+    }
+    if (/[\u0600-\u06ff]/.test(t)) {
+        return 'ar';
+    }
+    if (/[\u0e00-\u0e7f]/.test(t)) {
+        return 'th';
+    }
+    return 'en';
+}
 
-    switch (langDetectEngine) {
-        case 'baidu':
-            return await baidu_detect(text);
-        case 'google':
-            return await google_detect(text);
-        case 'local':
+function withTimeout(promise, ms) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('detect timeout')), ms)),
+    ]);
+}
+
+const ONLINE_ENGINES = {
+    baidu: baidu_detect,
+    google: google_detect,
+    tencent: tencent_detect,
+    niutrans: niutrans_detect,
+    yandex: yandex_detect,
+    bing: bing_detect,
+};
+
+export default async function detect(text) {
+    const langDetectEngine = (await store.get('translate_detect_engine')) ?? 'local';
+
+    // Local (offline) detection is fast and reliable; prefer it by default.
+    if (langDetectEngine === 'local') {
+        try {
+            return await withTimeout(local_detect(text), 2000);
+        } catch {
+            return heuristic_detect(text);
+        }
+    }
+
+    const engine = ONLINE_ENGINES[langDetectEngine];
+    if (!engine) {
+        try {
             return await local_detect(text);
-        case 'tencent':
-            return await tencent_detect(text);
-        case 'niutrans':
-            return await niutrans_detect(text);
-        case 'yandex':
-            return await yandex_detect(text);
-        case 'bing':
-            return await bing_detect(text);
-        default:
-            return await local_detect(text);
+        } catch {
+            return heuristic_detect(text);
+        }
+    }
+
+    // Bound remote engines so a slow/blocked endpoint cannot stall translation.
+    try {
+        return await withTimeout(engine(text), 800);
+    } catch {
+        try {
+            return await withTimeout(local_detect(text), 1000);
+        } catch {
+            return heuristic_detect(text);
+        }
     }
 }

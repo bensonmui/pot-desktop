@@ -43,11 +43,23 @@
             "he": "Hebrew"
         },
         "config": {
+            "svc_request_path": "Request Path",
+            "svc_lingva_hint": "The default public instance is often offline. Point this to your own Lingva instance if needed.",
+            "svc_custom_headers": "Custom Headers",
+            "svc_custom_headers_hint": "One per line as Header: Value, or a JSON object.",
+            "svc_email_optional": "Email (optional, raises daily limit)",
+            "svc_providers": "Providers (in order)",
+            "svc_providers_hint": "Comma-separated: google, bing, mymemory. First success wins.",
+            "svc_naver_key": "Naver API Key",
+            "svc_get_free_key": "Get a free key",
+            "svc_client_id": "Client ID",
+            "svc_client_secret": "Client Secret",
             "general": {
                 "label": "General",
                 "title": "General Settings",
                 "auto_start": "Auto Startup",
                 "check_update": "Check Update",
+                "clipboard_monitor": "Clipboard Monitor",
                 "server_port": "Listening Port",
                 "server_port_change": "The listening port has been changed, Please restart the application for the changes to take effect",
                 "app_language": "Display Language",
@@ -106,6 +118,8 @@
                 "incremental_translate": "Incremental Translation",
                 "dynamic_translate": "Dynamic Translation",
                 "delete_newline": "Delete Newline",
+                "translation_cache": "Translation Cache",
+                "render_markdown": "Render Markdown",
                 "remember_language": "Remember Target Language",
                 "font_size": {
                     "title": "Font Size",

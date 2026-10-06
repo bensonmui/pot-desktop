@@ -113,7 +113,7 @@ export default function General() {
                         )}
                     </div>
                     <div className='config-item'>
-                        <h3>Clipboard Monitor</h3>
+                        <h3>{t('config.general.clipboard_monitor')}</h3>
                         {clipboardMonitor !== null && (
                             <Switch
                                 isSelected={clipboardMonitor}

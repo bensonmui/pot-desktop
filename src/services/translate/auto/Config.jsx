@@ -64,7 +64,7 @@ export function Config(props) {
                 </div>
                 <div className='config-item'>
                     <Input
-                        label='Providers (in order)'
+                        label={t('config.svc_providers')}
                         labelPlacement='outside-left'
                         value={config['providers']}
                         variant='bordered'
@@ -78,9 +78,7 @@ export function Config(props) {
                         }}
                     />
                 </div>
-                <p className='text-[10px] text-default-700'>
-                    Comma-separated. Available: google, bing, mymemory. The first one that succeeds is used.
-                </p>
+                <p className='text-[10px] text-default-700'>{t('config.svc_providers_hint')}</p>
                 <br />
                 <Button
                     type='submit'

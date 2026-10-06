@@ -17,7 +17,7 @@ export default function Translate() {
     const [sourceLanguage, setSourceLanguage] = useConfig('translate_source_language', 'auto');
     const [targetLanguage, setTargetLanguage] = useConfig('translate_target_language', 'zh_cn');
     const [secondLanguage, setSecondLanguage] = useConfig('translate_second_language', 'en');
-    const [detectEngine, setDetectEngine] = useConfig('translate_detect_engine', 'baidu');
+    const [detectEngine, setDetectEngine] = useConfig('translate_detect_engine', 'local');
     const [autoCopy, setAutoCopy] = useConfig('translate_auto_copy', 'disable');
     const [incrementalTranslate, setIncrementalTranslate] = useConfig('incremental_translate', false);
     const [historyDisable, setHistoryDisable] = useConfig('history_disable', false);
@@ -203,7 +203,7 @@ export default function Translate() {
                         )}
                     </div>
                     <div className='config-item'>
-                        <h3 className='my-auto mx-0'>Translation Cache</h3>
+                        <h3 className='my-auto mx-0'>{t('config.translate.translation_cache')}</h3>
                         {translateCache !== null && (
                             <Switch
                                 isSelected={translateCache}
@@ -214,7 +214,7 @@ export default function Translate() {
                         )}
                     </div>
                     <div className='config-item'>
-                        <h3 className='my-auto mx-0'>Render Markdown</h3>
+                        <h3 className='my-auto mx-0'>{t('config.translate.render_markdown')}</h3>
                         {markdownRender !== null && (
                             <Switch
                                 isSelected={markdownRender}

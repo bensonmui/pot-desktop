@@ -64,7 +64,7 @@ export function Config(props) {
                 </div>
                 <div className='config-item'>
                     <Input
-                        label='Email (optional, raises daily limit)'
+                        label={t('config.svc_email_optional')}
                         labelPlacement='outside-left'
                         value={config['email']}
                         variant='bordered'

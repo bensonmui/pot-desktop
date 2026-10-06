@@ -31,6 +31,9 @@ import { nanoid } from 'nanoid';
 import { useSpring, animated } from '@react-spring/web';
 import useMeasure from 'react-use-measure';
 import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 import * as builtinCollectionServices from '../../../../services/collection';
 import { sourceLanguageAtom, targetLanguageAtom } from '../LanguageArea';
@@ -56,7 +59,17 @@ let translateID = [];
 export default function TargetArea(props) {
     const { index, name, translateServiceInstanceList, pluginList, serviceInstanceConfigMap, ...drag } = props;
 
-    const [currentTranslateServiceInstanceKey, setCurrentTranslateServiceInstanceKey] = useState(name);
+    const [currentTranslateServiceInstanceKey, setCurrentTranslateServiceInstanceKey] = useState(() => {
+        try {
+            const saved = localStorage.getItem(`translate_card_service_${index}`);
+            if (saved && translateServiceInstanceList && translateServiceInstanceList.includes(saved)) {
+                return saved;
+            }
+        } catch {
+            // ignore
+        }
+        return name;
+    });
     function getInstanceName(instanceKey, serviceNameSupplier) {
         const instanceConfig = serviceInstanceConfigMap[instanceKey] ?? {};
         return getDisplayInstanceName(instanceConfig[INSTANCE_NAME_CONFIG_KEY], serviceNameSupplier);
@@ -461,6 +474,11 @@ export default function TargetArea(props) {
                             className='max-h-[40vh] overflow-y-auto'
                             onAction={(key) => {
                                 setCurrentTranslateServiceInstanceKey(key);
+                                try {
+                                    localStorage.setItem(`translate_card_service_${index}`, key);
+                                } catch {
+                                    // ignore
+                                }
                             }}
                         >
                             {translateServiceInstanceList.map((instanceKey) => {
@@ -538,6 +556,8 @@ export default function TargetArea(props) {
                                     className={`text-[${appFontSize}px] select-text`}
                                 >
                                     <ReactMarkdown
+                                        remarkPlugins={[remarkMath]}
+                                        rehypePlugins={[rehypeKatex]}
                                         components={{
                                             p: ({ node, ...props }) => <p className='my-1' {...props} />,
                                             ul: ({ node, ...props }) => (
