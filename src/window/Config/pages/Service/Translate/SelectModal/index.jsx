@@ -37,7 +37,10 @@ export default function SelectModal(props) {
                                             }
                                         >
                                             <div className='w-full'>
-                                                {t(`services.translate.${builtinServices[x].info.name}.title`)}
+                                                {t(`services.translate.${builtinServices[x].info.name}.title`, {
+                                                    defaultValue:
+                                                        builtinServices[x].info.display || builtinServices[x].info.name,
+                                                })}
                                             </div>
                                         </Button>
                                     </div>

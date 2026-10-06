@@ -9,7 +9,13 @@
 
 ## ✨ 本 fork 的變更
 
+**新增**
+- **MyMemory** 翻譯服務（免費、免 API Key），作為額外後備。
+
 **修正**
+- **長文翻譯** — Bing 現在會自動把長文切成約 1000 字分段再合併（其網頁端點超過會回 `statusCode 400`）。
+- **Google 翻譯** — 當 `translate.google.com` 被限流（HTTP 429）時，自動改用可用的 Google 端點，不再直接失敗。
+- **Ollama** — 送出 `think: false`，本機模型直接翻譯、不再輸出思考內容。
 - **Bing 翻譯** — 舊 token 端點 `edge.microsoft.com/translate/auth` 已下線（HTTP 404），改用 `bing.com/ttranslatev3`。
 - **Bing 詞典** — 舊 API `/api/v6/dictionarywords/search` 已停用（HTTP 403），改用 `bing.com/tlookupv3`。
     - 單詞 → 詞典卡片（詞性 + 釋義 + 聯想詞）

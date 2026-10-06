@@ -80,6 +80,7 @@ pub fn check_service_available() -> Result<(), Error> {
         "deepl",
         "ecdict",
         "lingva",
+        "mymemory",
         "geminipro",
         "niutrans",
         "ollama",

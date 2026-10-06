@@ -125,6 +125,46 @@ async function lookupDict(auth, text, from, to) {
     return null;
 }
 
+// Bing web translator (ttranslatev3) accepts roughly 1000 characters per request;
+// longer input returns {"statusCode":400}. Split long text into chunks.
+const MAX_CHUNK = 1000;
+
+function chunkText(text, limit = MAX_CHUNK) {
+    if (text.length <= limit) {
+        return [text];
+    }
+    const boundaries = '\n.!?。！？；;';
+    const chunks = [];
+    let remaining = text;
+    const min = Math.floor(limit * 0.6);
+    while (remaining.length > limit) {
+        let cut = -1;
+        for (let i = limit; i > min; i--) {
+            if (boundaries.includes(remaining[i - 1])) {
+                cut = i;
+                break;
+            }
+        }
+        if (cut === -1) {
+            for (let i = limit; i > min; i--) {
+                if (/\s/.test(remaining[i - 1])) {
+                    cut = i;
+                    break;
+                }
+            }
+        }
+        if (cut === -1) {
+            cut = limit;
+        }
+        chunks.push(remaining.slice(0, cut));
+        remaining = remaining.slice(cut);
+    }
+    if (remaining) {
+        chunks.push(remaining);
+    }
+    return chunks;
+}
+
 export async function translate(text, from, to) {
     const fromLang = detectSource(text, from);
     if (fromLang === to) {
@@ -142,7 +182,12 @@ export async function translate(text, from, to) {
         }
     }
 
-    return await translateText(auth, text, fromLang, to);
+    const chunks = chunkText(text, MAX_CHUNK);
+    let out = '';
+    for (const chunk of chunks) {
+        out += await translateText(auth, chunk, fromLang, to);
+    }
+    return out;
 }
 
 export * from './Config';

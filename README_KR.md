@@ -9,7 +9,13 @@
 
 ## ✨ 이 fork의 변경 사항
 
+**추가**
+- **MyMemory** 번역 서비스 (무료, API 키 불필요) — 추가 대체 수단.
+
 **수정**
+- **긴 텍스트** — Bing은 이제 입력을 약 1000자 단위로 나누어 번역합니다 (웹 엔드포인트는 더 긴 텍스트를 `statusCode 400`으로 거부).
+- **Google 번역** — `translate.google.com`이 속도 제한(HTTP 429)에 걸리면 사용 가능한 Google 엔드포인트로 자동 전환합니다.
+- **Ollama** — `think: false`를 보내 로컬 모델이 추론 없이 바로 번역합니다.
 - **Bing 번역** — 사용 중단된 `edge.microsoft.com/translate/auth` (HTTP 404) 대신 `bing.com/ttranslatev3` 사용.
 - **Bing 사전** — 중단된 `/api/v6/dictionarywords/search` (HTTP 403) 대신 `bing.com/tlookupv3` 사용.
     - 단어 → 사전 카드 (품사 + 뜻 + 연관어)

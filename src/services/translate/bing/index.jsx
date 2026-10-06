@@ -41,11 +41,47 @@ async function getBingAuth() {
     throw `Get Token Failed: ${lastErr}`;
 }
 
-export async function translate(text, from, to) {
-    const fromLang = from === '' || from === 'auto' ? 'auto-detect' : from;
+// Bing web translator (ttranslatev3) accepts roughly 1000 characters per request;
+// longer input returns {"statusCode":400}. Split long text into chunks.
+const MAX_CHUNK = 1000;
 
-    const auth = await getBingAuth();
+export function chunkText(text, limit = MAX_CHUNK) {
+    if (text.length <= limit) {
+        return [text];
+    }
+    const boundaries = '\n.!?。！？；;';
+    const chunks = [];
+    let remaining = text;
+    const min = Math.floor(limit * 0.6);
+    while (remaining.length > limit) {
+        let cut = -1;
+        for (let i = limit; i > min; i--) {
+            if (boundaries.includes(remaining[i - 1])) {
+                cut = i;
+                break;
+            }
+        }
+        if (cut === -1) {
+            for (let i = limit; i > min; i--) {
+                if (/\s/.test(remaining[i - 1])) {
+                    cut = i;
+                    break;
+                }
+            }
+        }
+        if (cut === -1) {
+            cut = limit;
+        }
+        chunks.push(remaining.slice(0, cut));
+        remaining = remaining.slice(cut);
+    }
+    if (remaining) {
+        chunks.push(remaining);
+    }
+    return chunks;
+}
 
+async function translateChunk(auth, text, fromLang, to) {
     const params = new URLSearchParams();
     params.set('fromLang', fromLang);
     params.set('text', text);
@@ -80,6 +116,19 @@ export async function translate(text, from, to) {
     } else {
         throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
     }
+}
+
+export async function translate(text, from, to) {
+    const fromLang = from === '' || from === 'auto' ? 'auto-detect' : from;
+
+    const auth = await getBingAuth();
+
+    const chunks = chunkText(text, MAX_CHUNK);
+    const results = [];
+    for (const chunk of chunks) {
+        results.push(await translateChunk(auth, chunk, fromLang, to));
+    }
+    return results.join('');
 }
 
 export * from './Config';

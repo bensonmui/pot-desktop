@@ -9,7 +9,13 @@
 
 ## ✨ Changes in this fork
 
+**Added**
+- **MyMemory** translation service (free, no API key) as an extra fallback.
+
 **Fixed**
+- **Long text** — Bing now splits input into ~1000-character chunks and joins the results (its web endpoint rejects longer text with `statusCode 400`).
+- **Google Translate** — falls back to a working endpoint when `translate.google.com` is rate-limited (HTTP 429).
+- **Ollama** — disable thinking so local models translate directly.
 - **Bing Translate** — the old token endpoint `edge.microsoft.com/translate/auth` was retired (HTTP 404). Now uses `bing.com/ttranslatev3`.
 - **Bing Dictionary** — the old API `/api/v6/dictionarywords/search` was disabled (HTTP 403). Now uses `bing.com/tlookupv3`.
     - single word → dictionary card (part of speech + meanings + related words)

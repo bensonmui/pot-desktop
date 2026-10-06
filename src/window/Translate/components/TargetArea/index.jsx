@@ -418,7 +418,13 @@ export default function TargetArea(props) {
                                     <div className='my-auto'>
                                         {getInstanceName(currentTranslateServiceInstanceKey, () =>
                                             t(
-                                                `services.translate.${getServiceName(currentTranslateServiceInstanceKey)}.title`
+                                                `services.translate.${getServiceName(currentTranslateServiceInstanceKey)}.title`,
+                                                {
+                                                    defaultValue:
+                                                        builtinServices[getServiceName(currentTranslateServiceInstanceKey)]
+                                                            .info.display ||
+                                                        getServiceName(currentTranslateServiceInstanceKey),
+                                                }
                                             )
                                         )}
                                     </div>
@@ -455,7 +461,11 @@ export default function TargetArea(props) {
                                         ) : (
                                             <div className='my-auto'>
                                                 {getInstanceName(instanceKey, () =>
-                                                    t(`services.translate.${getServiceName(instanceKey)}.title`)
+                                                    t(`services.translate.${getServiceName(instanceKey)}.title`, {
+                                                        defaultValue:
+                                                            builtinServices[getServiceName(instanceKey)].info.display ||
+                                                            getServiceName(instanceKey),
+                                                    })
                                                 )}
                                             </div>
                                         )}

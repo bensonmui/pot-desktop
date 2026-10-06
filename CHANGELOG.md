@@ -2,6 +2,18 @@
 
 All notable changes to this fork are documented here.
 
+## [3.0.10] - 2026-10-06
+
+### Added
+
+- **MyMemory** translation service (free, no API key) as an extra fallback when Bing/Google are unavailable.
+
+### Fixed
+
+- **Bing Translate / Bing Dictionary**: long input is now split into ~1000-character chunks and the results are joined (the Bing web endpoint rejects longer text with `{"statusCode":400}`).
+- **Google Translate**: when `translate.google.com` is rate-limited (HTTP 429, "automated queries"), the service now falls back to a working Google endpoint instead of failing.
+- **Ollama**: `think: false` is sent so local models translate directly without emitting reasoning text ([#1178](https://github.com/pot-app/pot-desktop/pull/1178)).
+
 ## [3.0.9] - 2026-10-05
 
 ### Fixed
