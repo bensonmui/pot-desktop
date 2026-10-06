@@ -51,6 +51,9 @@ export default function Translate() {
     const [hideLanguage, setHideLanguage] = useConfig('hide_language', false);
     const [hideWindow, setHideWindow] = useConfig('translate_hide_window', false);
     const [sideBySide, setSideBySide] = useConfig('translate_side_by_side', false);
+    const [windowOpacity, setWindowOpacity] = useConfig('translate_window_opacity', 1);
+    const [windowZoom, setWindowZoom] = useConfig('translate_window_zoom', 1);
+    const [snapEdges, setSnapEdges] = useConfig('translate_snap_edges', false);
     const [uiGlass, setUiGlass] = useConfig('ui_glass', true);
     const [uiGlow, setUiGlow] = useConfig('ui_glow', true);
     const [uiSpotlight, setUiSpotlight] = useConfig('ui_spotlight', true);
@@ -399,6 +402,57 @@ export default function Translate() {
                                 isSelected={sideBySide}
                                 onValueChange={(v) => {
                                     setSideBySide(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.window_opacity')}</h3>
+                        {windowOpacity !== null && (
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button variant='bordered'>{`${Math.round(windowOpacity * 100)}%`}</Button>
+                                </DropdownTrigger>
+                                <DropdownMenu
+                                    aria-label='window opacity'
+                                    onAction={(key) => {
+                                        setWindowOpacity(Number(key));
+                                    }}
+                                >
+                                    {[1, 0.95, 0.9, 0.85, 0.8, 0.7, 0.6].map((v) => (
+                                        <DropdownItem key={v}>{`${Math.round(v * 100)}%`}</DropdownItem>
+                                    ))}
+                                </DropdownMenu>
+                            </Dropdown>
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.window_zoom')}</h3>
+                        {windowZoom !== null && (
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button variant='bordered'>{`${Math.round(windowZoom * 100)}%`}</Button>
+                                </DropdownTrigger>
+                                <DropdownMenu
+                                    aria-label='window zoom'
+                                    onAction={(key) => {
+                                        setWindowZoom(Number(key));
+                                    }}
+                                >
+                                    {[0.8, 0.9, 1, 1.1, 1.25, 1.5].map((v) => (
+                                        <DropdownItem key={v}>{`${Math.round(v * 100)}%`}</DropdownItem>
+                                    ))}
+                                </DropdownMenu>
+                            </Dropdown>
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>{t('config.translate.snap_edges')}</h3>
+                        {snapEdges !== null && (
+                            <Switch
+                                isSelected={snapEdges}
+                                onValueChange={(v) => {
+                                    setSnapEdges(v);
                                 }}
                             />
                         )}

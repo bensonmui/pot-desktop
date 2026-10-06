@@ -31,6 +31,8 @@ export default function App() {
     const [appFont] = useConfig('app_font', 'default');
     const [appFallbackFont] = useConfig('app_fallback_font', 'default');
     const [appFontSize] = useConfig('app_font_size', 16);
+    const [appAccent] = useConfig('app_accent', 'default');
+    const [appRadius] = useConfig('app_radius', 'default');
     const { setTheme } = useTheme();
     const { i18n } = useTranslation();
 
@@ -112,6 +114,54 @@ export default function App() {
             document.documentElement.style.fontSize = `${appFontSize}px`;
         }
     }, [appFont, appFallbackFont, appFontSize]);
+
+    // 強調色（覆寫 NextUI primary 的 CSS 變數；'default' 用主題原色）
+    useEffect(() => {
+        const root = document.documentElement;
+        const presets = {
+            blue: [212, 100],
+            green: [142, 71],
+            purple: [270, 76],
+            pink: [330, 81],
+            orange: [25, 95],
+            red: [0, 84],
+        };
+        const shades = { 50: 97, 100: 94, 200: 86, 300: 76, 400: 66, 500: 56, 600: 48, 700: 41, 800: 35, 900: 30 };
+        if (appAccent && appAccent !== 'default' && presets[appAccent]) {
+            const [h, s] = presets[appAccent];
+            for (const [k, l] of Object.entries(shades)) {
+                root.style.setProperty(`--nextui-primary-${k}`, `${h} ${s}% ${l}%`);
+            }
+            root.style.setProperty('--nextui-primary', `${h} ${s}% ${shades[500]}%`);
+            root.style.setProperty('--nextui-primary-foreground', '0 0% 100%');
+        } else {
+            for (const k of Object.keys(shades)) {
+                root.style.removeProperty(`--nextui-primary-${k}`);
+            }
+            root.style.removeProperty('--nextui-primary');
+            root.style.removeProperty('--nextui-primary-foreground');
+        }
+    }, [appAccent]);
+
+    // 圓角（覆寫 NextUI radius 的 CSS 變數）
+    useEffect(() => {
+        const root = document.documentElement;
+        const radii = {
+            sm: { small: '4px', medium: '6px', large: '8px' },
+            md: { small: '6px', medium: '12px', large: '16px' },
+            lg: { small: '10px', medium: '16px', large: '22px' },
+        };
+        if (appRadius && appRadius !== 'default' && radii[appRadius]) {
+            const r = radii[appRadius];
+            root.style.setProperty('--nextui-radius-small', r.small);
+            root.style.setProperty('--nextui-radius-medium', r.medium);
+            root.style.setProperty('--nextui-radius-large', r.large);
+        } else {
+            root.style.removeProperty('--nextui-radius-small');
+            root.style.removeProperty('--nextui-radius-medium');
+            root.style.removeProperty('--nextui-radius-large');
+        }
+    }, [appRadius]);
 
     return <BrowserRouter>{windowMap[appWindow.label]}</BrowserRouter>;
 }

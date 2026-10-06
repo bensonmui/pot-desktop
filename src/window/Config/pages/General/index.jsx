@@ -36,6 +36,8 @@ export default function General() {
     const [appFont, setAppFont] = useConfig('app_font', 'default');
     const [appFallbackFont, setAppFallbackFont] = useConfig('app_fallback_font', 'default');
     const [appFontSize, setAppFontSize] = useConfig('app_font_size', 16);
+    const [appAccent, setAppAccent] = useConfig('app_accent', 'default');
+    const [appRadius, setAppRadius] = useConfig('app_radius', 'default');
     const [transparent, setTransparent] = useConfig('transparent', true);
     const [devMode, setDevMode] = useConfig('dev_mode', false);
     const [trayClickEvent, setTrayClickEvent] = useConfig('tray_click_event', 'config');
@@ -351,6 +353,51 @@ export default function General() {
                                     <DropdownItem key='system'>{t('config.general.theme.system')}</DropdownItem>
                                     <DropdownItem key='light'>{t('config.general.theme.light')}</DropdownItem>
                                     <DropdownItem key='dark'>{t('config.general.theme.dark')}</DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto'>{t('config.general.app_accent')}</h3>
+                        {appAccent !== null && (
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button variant='bordered'>{t(`config.general.accent.${appAccent}`)}</Button>
+                                </DropdownTrigger>
+                                <DropdownMenu
+                                    aria-label='app accent'
+                                    onAction={(key) => {
+                                        setAppAccent(key);
+                                    }}
+                                >
+                                    <DropdownItem key='default'>{t('config.general.accent.default')}</DropdownItem>
+                                    <DropdownItem key='blue'>{t('config.general.accent.blue')}</DropdownItem>
+                                    <DropdownItem key='green'>{t('config.general.accent.green')}</DropdownItem>
+                                    <DropdownItem key='purple'>{t('config.general.accent.purple')}</DropdownItem>
+                                    <DropdownItem key='pink'>{t('config.general.accent.pink')}</DropdownItem>
+                                    <DropdownItem key='orange'>{t('config.general.accent.orange')}</DropdownItem>
+                                    <DropdownItem key='red'>{t('config.general.accent.red')}</DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto'>{t('config.general.app_radius')}</h3>
+                        {appRadius !== null && (
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button variant='bordered'>{t(`config.general.radius.${appRadius}`)}</Button>
+                                </DropdownTrigger>
+                                <DropdownMenu
+                                    aria-label='app radius'
+                                    onAction={(key) => {
+                                        setAppRadius(key);
+                                    }}
+                                >
+                                    <DropdownItem key='default'>{t('config.general.radius.default')}</DropdownItem>
+                                    <DropdownItem key='sm'>{t('config.general.radius.sm')}</DropdownItem>
+                                    <DropdownItem key='md'>{t('config.general.radius.md')}</DropdownItem>
+                                    <DropdownItem key='lg'>{t('config.general.radius.lg')}</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
                         )}

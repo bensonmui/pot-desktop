@@ -59,6 +59,10 @@
             "svc_client_id": "Client ID",
             "svc_client_secret": "Client Secret",
             "general": {
+                "app_accent": "强调色",
+                "accent": {"default":"默认","blue":"蓝","green":"绿","purple":"紫","pink":"粉","orange":"橙","red":"红"},
+                "app_radius": "圆角",
+                "radius": {"default":"默认","sm":"小","md":"中","lg":"大"},
                 "label": "常规设置",
                 "title": "常规设置",
                 "auto_start": "开机时启动应用",
@@ -108,6 +112,9 @@
                 }
             },
             "translate": {
+                "window_opacity": "窗口透明度",
+                "window_zoom": "窗口缩放",
+                "snap_edges": "贴齐屏幕边缘",
                 "appearance": "外观",
                 "ui_glass": "毛玻璃效果",
                 "ui_glow": "微光边框",
@@ -188,6 +195,11 @@
                 "set_hotkey": "按下按键设置快捷键"
             },
             "service": {
+                "test_all": "全部测试",
+                "test_all_done": "全部测试完成",
+                "last_check": "上次检查",
+                "health_ok": "可用",
+                "health_fail": "失败",
                 "test": "测试",
                 "test_success": "测试成功",
                 "label": "服务设置",
@@ -216,6 +228,13 @@
                 "title": "历史记录"
             },
             "backup": {
+                "settings_file": "设置文件（JSON）",
+                "export_settings": "导出设置",
+                "import_settings": "导入设置",
+                "export_success": "已导出设置",
+                "export_failed": "导出失败",
+                "import_success": "已导入设置（重新载入中）",
+                "import_failed": "导入失败",
                 "label": "备份设置",
                 "title": "备份设置",
                 "type": "服务类型",
@@ -236,6 +255,8 @@
                 "empty": "您还没有备份"
             },
             "about": {
+                "export_report": "反馈问题（导出诊断）",
+                "report_saved": "已导出诊断文件",
                 "label": "关于应用",
                 "title": "关于应用",
                 "website": "官网",

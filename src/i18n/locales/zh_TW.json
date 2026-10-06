@@ -59,6 +59,10 @@
             "svc_client_id": "Client ID",
             "svc_client_secret": "Client Secret",
             "general": {
+                "app_accent": "強調色",
+                "accent": {"default":"預設","blue":"藍","green":"綠","purple":"紫","pink":"粉","orange":"橙","red":"紅"},
+                "app_radius": "圓角",
+                "radius": {"default":"預設","sm":"小","md":"中","lg":"大"},
                 "label": "一般設定",
                 "title": "一般設定",
                 "auto_start": "開機自動啟動",
@@ -108,6 +112,9 @@
                 "dev_mode": "開發者模式"
             },
             "translate": {
+                "window_opacity": "視窗透明度",
+                "window_zoom": "視窗縮放",
+                "snap_edges": "貼齊螢幕邊緣",
                 "appearance": "外觀",
                 "ui_glass": "毛玻璃效果",
                 "ui_glow": "微光邊框",
@@ -188,6 +195,11 @@
                 "set_hotkey": "按下設定快速鍵"
             },
             "service": {
+                "test_all": "全部測試",
+                "test_all_done": "全部測試完成",
+                "last_check": "上次檢查",
+                "health_ok": "可用",
+                "health_fail": "失敗",
                 "test": "測試",
                 "test_success": "測試成功",
                 "label": "服務設定",
@@ -216,6 +228,13 @@
                 "title": "歷史記錄"
             },
             "backup": {
+                "settings_file": "設定檔（JSON）",
+                "export_settings": "匯出設定",
+                "import_settings": "匯入設定",
+                "export_success": "已匯出設定",
+                "export_failed": "匯出失敗",
+                "import_success": "已匯入設定（重新載入中）",
+                "import_failed": "匯入失敗",
                 "label": "備份設定",
                 "title": "備份設定",
                 "type": "服務類型",
@@ -236,6 +255,8 @@
                 "logout": "登出"
             },
             "about": {
+                "export_report": "回報問題（匯出診斷）",
+                "report_saved": "已匯出診斷檔",
                 "label": "關於",
                 "title": "關於應用程式",
                 "website": "官方網站",

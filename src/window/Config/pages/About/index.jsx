@@ -8,13 +8,56 @@ import { BsGithub } from 'react-icons/bs';
 import { invoke } from '@tauri-apps/api';
 import React from 'react';
 
-import { appVersion } from '../../../../utils/env';
+import { appVersion, osType } from '../../../../utils/env';
+import { readTextFile, writeTextFile } from '@tauri-apps/api/fs';
+import { save } from '@tauri-apps/api/dialog';
+import { join } from '@tauri-apps/api/path';
+import toast, { Toaster } from 'react-hot-toast';
+import { useToastStyle } from '../../../../hooks';
 
 export default function About() {
     const { t } = useTranslation();
+    const toastStyle = useToastStyle();
+
+    const onExportReport = async () => {
+        try {
+            let log = '';
+            try {
+                const dir = await appLogDir();
+                log = await readTextFile(await join(dir, 'pot.log'));
+            } catch {
+                log = '(log not found)';
+            }
+            const tail = log.split('\n').slice(-1500).join('\n');
+            const info = {
+                app: 'Pot Desktop (bensonmui fork)',
+                version: appVersion,
+                os: osType,
+                locale: navigator.language,
+                time: new Date().toISOString(),
+            };
+            const content = `=== Pot Desktop diagnostic report ===\n${JSON.stringify(
+                info,
+                null,
+                2
+            )}\n\n=== log (tail 1500 lines) ===\n${tail}\n`;
+            const path = await save({
+                defaultPath: `pot-report-${new Date().toISOString().slice(0, 10)}.txt`,
+                filters: [{ name: 'Text', extensions: ['txt'] }],
+            });
+            if (!path) {
+                return;
+            }
+            await writeTextFile(path, content);
+            toast.success(t('config.about.report_saved'), { style: toastStyle });
+        } catch (e) {
+            toast.error(String(e), { style: toastStyle });
+        }
+    };
 
     return (
         <div className='h-full w-full py-[80px] px-[100px]'>
+            <Toaster />
             <img
                 src='icon.png'
                 className='mx-auto h-[100px] mb-[5px]'
@@ -190,6 +233,14 @@ export default function About() {
                         }}
                     >
                         {t('config.about.view_config')}
+                    </Button>
+                    <Button
+                        variant='light'
+                        className='my-[5px]'
+                        size='sm'
+                        onPress={onExportReport}
+                    >
+                        {t('config.about.export_report')}
                     </Button>
                 </div>
 

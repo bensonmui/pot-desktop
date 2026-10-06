@@ -9,7 +9,8 @@ import React, { useState } from 'react';
 
 import * as builtinServices from '../../../../../../services/translate';
 import { useConfig, useToastStyle } from '../../../../../../hooks';
-import { invoke_plugin } from '../../../../../../utils/invoke_plugin';
+import { getServiceHealthOf, setServiceHealth } from '../../../../../../utils/service_health';
+import { testTranslateService } from '../../../../../../utils/service_test';
 import { INSTANCE_NAME_CONFIG_KEY, ServiceSourceType, getDisplayInstanceName, getServiceName, getServiceSouceType } from '../../../../../../utils/service_instance';
 
 export default function ServiceItem(props) {
@@ -17,6 +18,7 @@ export default function ServiceItem(props) {
     const { t } = useTranslation();
     const [serviceInstanceConfig, setServiceInstanceConfig] = useConfig(serviceInstanceKey, {});
     const [testing, setTesting] = useState(false);
+    const [health, setHealth] = useState(() => getServiceHealthOf(serviceInstanceKey));
     const toastStyle = useToastStyle();
 
     const serviceSourceType = getServiceSouceType(serviceInstanceKey)
@@ -27,24 +29,16 @@ export default function ServiceItem(props) {
             return;
         }
         setTesting(true);
-        const started = Date.now();
         try {
-            let result;
-            if (serviceSourceType === ServiceSourceType.PLUGIN) {
-                const [func, utils] = await invoke_plugin('translate', serviceName);
-                result = await func('hello', 'en', 'zh', { config: serviceInstanceConfig, utils });
-            } else {
-                const LanguageEnum = builtinServices[serviceName].Language || {};
-                const from = LanguageEnum.en ?? LanguageEnum.auto;
-                const to = LanguageEnum.zh_cn ?? LanguageEnum.zh_tw ?? LanguageEnum.en ?? LanguageEnum.auto;
-                result = await builtinServices[serviceName].translate('hello', from, to, {
-                    config: serviceInstanceConfig,
-                });
-            }
-            const ms = Date.now() - started;
-            const preview = String(result ?? '').replace(/\s+/g, ' ').slice(0, 40);
-            toast.success(`${t('config.service.test_success')} · ${ms}ms · ${preview}`, { style: toastStyle });
+            const r = await testTranslateService(serviceInstanceKey, serviceInstanceConfig);
+            const value = { ok: true, ms: r.ms, preview: r.preview, ts: Date.now() };
+            setHealth(value);
+            setServiceHealth(serviceInstanceKey, value);
+            toast.success(`${t('config.service.test_success')} · ${r.ms}ms · ${r.preview}`, { style: toastStyle });
         } catch (e) {
+            const value = { ok: false, msg: String(e).slice(0, 140), ts: Date.now() };
+            setHealth(value);
+            setServiceHealth(serviceInstanceKey, value);
             toast.error(`${t('config.service.test_failed')}: ${String(e).slice(0, 140)}`, { style: toastStyle });
         } finally {
             setTesting(false);
@@ -89,6 +83,21 @@ export default function ServiceItem(props) {
                     )}
                 </div>
                 <div className='flex'>
+                    {health && (
+                        <Tooltip
+                            content={
+                                health.ok
+                                    ? `${t('config.service.health_ok')} · ${health.ms}ms · ${health.preview ?? ''}`
+                                    : `${t('config.service.health_fail')}: ${health.msg ?? ''}`
+                            }
+                        >
+                            <span
+                                className={`my-auto mr-2 h-[8px] w-[8px] rounded-full ${
+                                    health.ok ? 'bg-success' : 'bg-danger'
+                                }`}
+                            />
+                        </Tooltip>
+                    )}
                     <Tooltip content={t('config.service.test')}>
                         <Button
                             isIconOnly

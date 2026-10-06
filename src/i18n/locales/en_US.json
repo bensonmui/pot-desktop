@@ -59,6 +59,10 @@
             "svc_client_id": "Client ID",
             "svc_client_secret": "Client Secret",
             "general": {
+                "app_accent": "Accent color",
+                "accent": {"default":"Default","blue":"Blue","green":"Green","purple":"Purple","pink":"Pink","orange":"Orange","red":"Red"},
+                "app_radius": "Corner radius",
+                "radius": {"default":"Default","sm":"Small","md":"Medium","lg":"Large"},
                 "label": "General",
                 "title": "General Settings",
                 "auto_start": "Auto Startup",
@@ -108,6 +112,9 @@
                 }
             },
             "translate": {
+                "window_opacity": "Window opacity",
+                "window_zoom": "Window zoom",
+                "snap_edges": "Snap to screen edges",
                 "appearance": "Appearance",
                 "ui_glass": "Frosted glass",
                 "ui_glow": "Glow border",
@@ -188,6 +195,11 @@
                 "set_hotkey": "Press to Set Hotkey"
             },
             "service": {
+                "test_all": "Test all",
+                "test_all_done": "All tests done",
+                "last_check": "Last check",
+                "health_ok": "OK",
+                "health_fail": "Failed",
                 "test": "Test",
                 "test_success": "Test OK",
                 "label": "Service",
@@ -216,6 +228,13 @@
                 "title": "History"
             },
             "backup": {
+                "settings_file": "Settings file (JSON)",
+                "export_settings": "Export settings",
+                "import_settings": "Import settings",
+                "export_success": "Settings exported",
+                "export_failed": "Export failed",
+                "import_success": "Settings imported (reloading)",
+                "import_failed": "Import failed",
                 "label": "Backup",
                 "title": "Backup Settings",
                 "type": "Service Type",
@@ -236,6 +255,8 @@
                 "empty": "You have not backed up yet"
             },
             "about": {
+                "export_report": "Report issue (export diagnostics)",
+                "report_saved": "Diagnostic file saved",
                 "label": "About",
                 "title": "About Application",
                 "website": "Website",

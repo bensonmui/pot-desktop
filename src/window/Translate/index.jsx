@@ -1,6 +1,6 @@
 import { readDir, BaseDirectory, readTextFile, exists } from '@tauri-apps/api/fs';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import { appWindow, currentMonitor, LogicalSize } from '@tauri-apps/api/window';
+import { appWindow, currentMonitor, LogicalSize, LogicalPosition } from '@tauri-apps/api/window';
 import { appConfigDir, join } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { Spacer, Button } from '@nextui-org/react';
@@ -82,6 +82,9 @@ export default function Translate() {
     const [collectionServiceInstanceList] = useConfig('collection_service_list', []);
     const [hideLanguage] = useConfig('hide_language', false);
     const [sideBySide] = useConfig('translate_side_by_side', false);
+    const [windowOpacity] = useConfig('translate_window_opacity', 1);
+    const [windowZoom] = useConfig('translate_window_zoom', 1);
+    const [snapEdges] = useConfig('translate_snap_edges', false);
     const [uiTechBg] = useConfig('ui_tech_bg', true);
     const [uiAnimations] = useConfig('ui_animations', true);
     const [pined, setPined] = useState(false);
@@ -132,6 +135,59 @@ export default function Translate() {
             }
         })();
     }, [sideBySide]);
+    // 貼齊螢幕邊緣（放開滑鼠停頓後吸附）
+    useEffect(() => {
+        if (!snapEdges) {
+            return;
+        }
+        const SNAP = 18;
+        let timeout = null;
+        const unlistenMove = listen('tauri://move', () => {
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(async () => {
+                if (appWindow.label !== 'translate') {
+                    return;
+                }
+                try {
+                    const monitor = await currentMonitor();
+                    if (!monitor) {
+                        return;
+                    }
+                    const factor = monitor.scaleFactor;
+                    const pos = (await appWindow.outerPosition()).toLogical(factor);
+                    const size = (await appWindow.outerSize()).toLogical(factor);
+                    const monPos = monitor.position.toLogical(factor);
+                    const monSize = monitor.size.toLogical(factor);
+                    let x = pos.x;
+                    let y = pos.y;
+                    if (Math.abs(x - monPos.x) <= SNAP) {
+                        x = monPos.x;
+                    }
+                    if (Math.abs(monPos.x + monSize.width - (x + size.width)) <= SNAP) {
+                        x = monPos.x + monSize.width - size.width;
+                    }
+                    if (Math.abs(y - monPos.y) <= SNAP) {
+                        y = monPos.y;
+                    }
+                    if (Math.abs(monPos.y + monSize.height - (y + size.height)) <= SNAP) {
+                        y = monPos.y + monSize.height - size.height;
+                    }
+                    if (x !== pos.x || y !== pos.y) {
+                        await appWindow.setPosition(new LogicalPosition(x, y));
+                    }
+                } catch {
+                    // ignore
+                }
+            }, 140);
+        });
+        return () => {
+            unlistenMove.then((f) => {
+                f();
+            });
+        };
+    }, [snapEdges]);
     // 保存窗口位置
     useEffect(() => {
         if (windowPosition !== null && windowPosition === 'pre_state') {
@@ -306,12 +362,12 @@ export default function Translate() {
     const rootAnim = uiAnimations
         ? {
               initial: { opacity: 0, scale: 0.98 },
-              animate: closing ? { opacity: 0, scale: 0.98 } : { opacity: 1, scale: 1 },
+              animate: closing ? { opacity: 0, scale: 0.98 } : { opacity: windowOpacity ?? 1, scale: 1 },
               transition: { type: 'spring', stiffness: 320, damping: 28 },
           }
         : {
               initial: false,
-              animate: { opacity: 1, scale: 1 },
+              animate: { opacity: windowOpacity ?? 1, scale: 1 },
               transition: { duration: 0 },
           };
 
@@ -331,6 +387,7 @@ export default function Translate() {
         pluginList && (
             <motion.div
                 {...rootAnim}
+                style={{ zoom: windowZoom ?? 1 }}
                 className={`relative bg-background h-screen w-screen overflow-hidden ${
                     osType === 'Linux' && 'rounded-[10px] border-1 border-default-100'
                 }`}

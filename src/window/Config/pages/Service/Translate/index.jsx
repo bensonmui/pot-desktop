@@ -8,6 +8,10 @@ import { useToastStyle } from '../../../../../hooks';
 import SelectPluginModal from '../SelectPluginModal';
 import { osType } from '../../../../../utils/env';
 import { useConfig, deleteKey } from '../../../../../hooks';
+import { getServiceHealth, setServiceHealth } from '../../../../../utils/service_health';
+import { testTranslateService } from '../../../../../utils/service_test';
+import { store } from '../../../../../utils/store';
+import { TbBolt } from 'react-icons/tb';
 import ServiceItem from './ServiceItem';
 import SelectModal from './SelectModal';
 import ConfigModal from './ConfigModal';
@@ -22,6 +26,15 @@ export default function Translate(props) {
     const { isOpen: isSelectOpen, onOpen: onSelectOpen, onOpenChange: onSelectOpenChange } = useDisclosure();
     const { isOpen: isConfigOpen, onOpen: onConfigOpen, onOpenChange: onConfigOpenChange } = useDisclosure();
     const [currentConfigKey, setCurrentConfigKey] = useState('deepl');
+    const [testingAll, setTestingAll] = useState(false);
+    const [healthVersion, setHealthVersion] = useState(0);
+    const [lastCheck, setLastCheck] = useState(() => {
+        const health = getServiceHealth();
+        const times = Object.values(health)
+            .map((h) => h && h.ts)
+            .filter(Boolean);
+        return times.length ? Math.max(...times) : 0;
+    });
     // now it's service instance list
     const [translateServiceInstanceList, setTranslateServiceInstanceList] = useConfig('translate_service_list', [
         'deepl',
@@ -65,6 +78,35 @@ export default function Translate(props) {
         }
     };
 
+    const testAll = async () => {
+        if (testingAll) {
+            return;
+        }
+        setTestingAll(true);
+        for (const instanceKey of translateServiceInstanceList) {
+            try {
+                const config = (await store.get(instanceKey)) ?? {};
+                const r = await testTranslateService(instanceKey, config);
+                setServiceHealth(instanceKey, { ok: true, ms: r.ms, preview: r.preview, ts: Date.now() });
+            } catch (e) {
+                setServiceHealth(instanceKey, { ok: false, msg: String(e).slice(0, 140), ts: Date.now() });
+            }
+        }
+        setLastCheck(Date.now());
+        setHealthVersion((v) => v + 1);
+        setTestingAll(false);
+        toast.success(t('config.service.test_all_done'), { style: toastStyle });
+    };
+
+    const formatTime = (ts) => {
+        if (!ts) {
+            return '-';
+        }
+        const d = new Date(ts);
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    };
+
     return (
         <>
             <Toaster />
@@ -73,6 +115,20 @@ export default function Translate(props) {
                     osType === 'Linux' ? 'h-[calc(100vh-140px)]' : 'h-[calc(100vh-120px)]'
                 } overflow-y-auto p-5 flex justify-between`}
             >
+                <div className='flex justify-between mb-[8px]'>
+                    <Button
+                        size='sm'
+                        variant='flat'
+                        isLoading={testingAll}
+                        startContent={!testingAll ? <TbBolt /> : undefined}
+                        onPress={testAll}
+                    >
+                        {t('config.service.test_all')}
+                    </Button>
+                    <span className='text-[12px] text-default-500 my-auto'>
+                        {`${t('config.service.last_check')}: ${formatTime(lastCheck)}`}
+                    </span>
+                </div>
                 <DragDropContext onDragEnd={onDragEnd}>
                     <Droppable
                         droppableId='droppable'
@@ -88,7 +144,7 @@ export default function Translate(props) {
                                     translateServiceInstanceList.map((x, i) => {
                                         return (
                                             <Draggable
-                                                key={x}
+                                                key={`${x}-${healthVersion}`}
                                                 draggableId={x}
                                                 index={i}
                                             >

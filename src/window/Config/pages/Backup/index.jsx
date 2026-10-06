@@ -1,4 +1,8 @@
-import { readTextFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { readTextFile, writeTextFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { save, open } from '@tauri-apps/api/dialog';
+import { appConfigDir, join } from '@tauri-apps/api/path';
+import { invoke } from '@tauri-apps/api';
+import { store } from '../../../../utils/store';
 import { DropdownTrigger } from '@nextui-org/react';
 import { useDisclosure } from '@nextui-org/react';
 import toast, { Toaster } from 'react-hot-toast';
@@ -178,7 +182,48 @@ export default function Backup() {
         };
     }, [backupType]);
 
+    const onExportSettings = async () => {
+        try {
+            const dir = await appConfigDir();
+            const content = await readTextFile(await join(dir, 'config.json'));
+            const path = await save({
+                defaultPath: `pot-config-${new Date().toISOString().slice(0, 10)}.json`,
+                filters: [{ name: 'JSON', extensions: ['json'] }],
+            });
+            if (!path) {
+                return;
+            }
+            await writeTextFile(path, content);
+            toast.success(t('config.backup.export_success'), { style: toastStyle });
+        } catch (e) {
+            toast.error(`${t('config.backup.export_failed')}: ${String(e)}`, { style: toastStyle });
+        }
+    };
+
+    const onImportSettings = async () => {
+        try {
+            const path = await open({
+                multiple: false,
+                directory: false,
+                filters: [{ name: 'JSON', extensions: ['json'] }],
+            });
+            if (!path) {
+                return;
+            }
+            const content = await readTextFile(path);
+            JSON.parse(content);
+            const dir = await appConfigDir();
+            await writeTextFile(await join(dir, 'config.json'), content);
+            await store.load();
+            await invoke('reload_store');
+            toast.success(t('config.backup.import_success'), { style: toastStyle });
+        } catch (e) {
+            toast.error(`${t('config.backup.import_failed')}: ${String(e)}`, { style: toastStyle });
+        }
+    };
+
     return (
+        <>
         <Card className='mb-[10px]'>
             <Toaster />
             <CardBody>
@@ -313,5 +358,27 @@ export default function Backup() {
                 // refreshToken={aliyunRefreshToken}
             />
         </Card>
+        <Card className='mt-[10px]'>
+            <CardBody>
+                <h3 className='my-auto mb-[8px]'>{t('config.backup.settings_file')}</h3>
+                <div className='flex justify-around'>
+                    <Button
+                        color='primary'
+                        variant='flat'
+                        onPress={onExportSettings}
+                    >
+                        {t('config.backup.export_settings')}
+                    </Button>
+                    <Button
+                        color='warning'
+                        variant='flat'
+                        onPress={onImportSettings}
+                    >
+                        {t('config.backup.import_settings')}
+                    </Button>
+                </div>
+            </CardBody>
+        </Card>
+        </>
     );
 }
