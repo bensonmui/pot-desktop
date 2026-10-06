@@ -163,7 +163,8 @@ fn main() {
             local,
             install_plugin,
             font_list,
-            aliyun
+            aliyun,
+            set_clipboard_monitor
         ])
         .on_system_tray_event(tray_event_handler)
         .build(tauri::generate_context!())

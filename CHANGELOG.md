@@ -3,6 +3,20 @@
 本 fork 的變更，中英雙語。
 Notable changes in this fork, in Chinese and English.
 
+## [3.0.13] - 2026-10-06
+
+### Added / 新增
+
+- **Papago** 翻譯服務（Naver OpenAPI，需免費 key）。 / **Papago** translation service (Naver OpenAPI, free key).
+- **自訂 HTTP 標頭**：OpenAI 相容服務可加自訂標頭，解鎖需特殊標頭的端點。 / **Custom HTTP headers** for OpenAI-compatible services.
+- **IPA 音標**：Bing 詞典對英文單詞補上國際音標。 / **IPA phonetics** for the Bing dictionary (English words).
+- **Markdown 渲染**（可選）：翻譯結果以 Markdown 顯示。 / **Optional Markdown rendering** of results.
+- **剪貼簿監聽**開關加入設定頁（原本只在系統匣）。 / **Clipboard monitor toggle** in Settings.
+
+### Changed / 調整
+
+- **翻譯快取**：相同文字 5 分鐘內直接回上次結果（更快、省額度）。 / **Translation cache**: repeated text within 5 minutes returns the cached result (faster, saves quota).
+
 ## [3.0.12] - 2026-10-06
 
 ### Changed / 調整

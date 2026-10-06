@@ -21,6 +21,7 @@ import * as _ecdict from './ecdict';
 import * as _lingva from './lingva';
 import * as _mymemory from './mymemory';
 import * as _auto from './auto';
+import * as _papago from './papago';
 
 export const deepl = _deepl;
 export const bing = _bing;
@@ -45,3 +46,4 @@ export const ecdict = _ecdict;
 export const lingva = _lingva;
 export const mymemory = _mymemory;
 export const auto = _auto;
+export const papago = _papago;

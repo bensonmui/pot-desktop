@@ -34,6 +34,7 @@ export function Config(props) {
             requestPath: 'https://api.openai.com/v1/chat/completions',
             model: 'gpt-3.5-turbo',
             apiKey: '',
+            customHeaders: '',
             stream: false,
             promptList: [
                 {
@@ -310,6 +311,23 @@ export function Config(props) {
                             ))}
                         </DropdownMenu>
                     </Dropdown>
+                </div>
+                <h3 className='my-auto'>Custom Headers</h3>
+                <p className='text-[10px] text-default-700'>
+                    One per line as <code>Header: Value</code>, or a JSON object. Applied to every request (e.g. session or
+                    referer headers some endpoints require).
+                </p>
+                <div className='config-item'>
+                    <Textarea
+                        label=''
+                        labelPlacement='outside'
+                        variant='faded'
+                        value={openaiConfig['customHeaders'] ?? ''}
+                        placeholder={'X-Custom-Header: value'}
+                        onValueChange={(value) => {
+                            setOpenaiConfig({ ...openaiConfig, customHeaders: value });
+                        }}
+                    />
                 </div>
                 <h3 className='my-auto'>Prompt List</h3>
                 <p className='text-[10px] text-default-700'>{t('services.translate.openai.prompt_description')}</p>

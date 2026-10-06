@@ -27,6 +27,7 @@ export default function General() {
     const [autoStart, setAutoStart] = useState(false);
     const [fontList, setFontList] = useState(null);
     const [checkUpdate, setCheckUpdate] = useConfig('check_update', true);
+    const [clipboardMonitor, setClipboardMonitor] = useConfig('clipboard_monitor', false);
     const [serverPort, setServerPort] = useConfig('server_port', 60828);
     const [appLanguage, setAppLanguage] = useConfig('app_language', 'en');
     const [appTheme, setAppTheme] = useConfig('app_theme', 'system');
@@ -107,6 +108,20 @@ export default function General() {
                                 isSelected={checkUpdate}
                                 onValueChange={(v) => {
                                     setCheckUpdate(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3>Clipboard Monitor</h3>
+                        {clipboardMonitor !== null && (
+                            <Switch
+                                isSelected={clipboardMonitor}
+                                onValueChange={(v) => {
+                                    setClipboardMonitor(v);
+                                    invoke('set_clipboard_monitor', { enabled: v }).catch((e) =>
+                                        toast.error(e.toString(), { style: toastStyle })
+                                    );
                                 }}
                             />
                         )}

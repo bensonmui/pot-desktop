@@ -23,6 +23,8 @@ export default function Translate() {
     const [historyDisable, setHistoryDisable] = useConfig('history_disable', false);
     const [dynamicTranslate, setDynamicTranslate] = useConfig('dynamic_translate', false);
     const [deleteNewline, setDeleteNewline] = useConfig('translate_delete_newline', false);
+    const [translateCache, setTranslateCache] = useConfig('translate_cache', true);
+    const [markdownRender, setMarkdownRender] = useConfig('translate_markdown', false);
     const [rememberLanguage, setRememberLanguage] = useConfig('translate_remember_language', false);
     // const [translateFontSize, setTranslateFontSize] = useConfig('translate_font_size', 16);
     const [windowPosition, setWindowPosition] = useConfig('translate_window_position', 'mouse');
@@ -196,6 +198,28 @@ export default function Translate() {
                                 isSelected={deleteNewline}
                                 onValueChange={(v) => {
                                     setDeleteNewline(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>Translation Cache</h3>
+                        {translateCache !== null && (
+                            <Switch
+                                isSelected={translateCache}
+                                onValueChange={(v) => {
+                                    setTranslateCache(v);
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className='config-item'>
+                        <h3 className='my-auto mx-0'>Render Markdown</h3>
+                        {markdownRender !== null && (
+                            <Switch
+                                isSelected={markdownRender}
+                                onValueChange={(v) => {
+                                    setMarkdownRender(v);
                                 }}
                             />
                         )}

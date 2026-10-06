@@ -10,6 +10,12 @@
 ## ✨ 本 fork 的變更
 
 **新增**
+- **Papago** 翻譯服務（Naver OpenAPI，需免費 key）。
+- **自訂 HTTP 標頭**（OpenAI 相容服務；解鎖需特殊標頭的端點）。
+- **IPA 音標**（Bing 詞典英文單詞）。
+- **Markdown 渲染**（可選）。
+- **翻譯快取**（相同文字更快）。
+- **剪貼簿監聽**開關加入設定頁。
 - **MyMemory** 翻譯服務（免費、免 API Key），作為額外後備。
 - **Auto（自動回退）**服務 — Google → Bing → MyMemory 依序嘗試，第一個成功即回。
 - **模型下拉選單**（OpenAI 相容服務，自動讀取 `/v1/models`）。

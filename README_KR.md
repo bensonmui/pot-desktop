@@ -10,6 +10,12 @@
 ## ✨ 이 fork의 변경 사항
 
 **추가**
+- **Papago** 번역 서비스 (Naver OpenAPI, 무료 키).
+- **사용자 정의 HTTP 헤더** (OpenAI 호환 서비스).
+- **IPA 발음기호** (Bing 사전 영어 단어).
+- **Markdown 렌더링** (선택).
+- **번역 캐시**.
+- **클립보드 모니터** 설정 페이지 토글.
 - **MyMemory** 번역 서비스 (무료, API 키 불필요) — 추가 대체 수단.
 - **Auto (대체)** 번역 서비스 — Google → Bing → MyMemory 순서로 시도.
 - **모델 선택** (OpenAI 호환 서비스, `/v1/models` 자동 로드).

@@ -2,6 +2,31 @@ import { fetch, Body } from '@tauri-apps/api/http';
 import { Language } from './info';
 import { defaultRequestArguments } from './Config';
 
+function parseCustomHeaders(raw) {
+    const out = {};
+    if (!raw) {
+        return out;
+    }
+    try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+            for (const [k, v] of Object.entries(parsed)) {
+                out[k] = String(v);
+            }
+            return out;
+        }
+    } catch {
+        // not JSON; fall back to "Key: Value" lines
+    }
+    for (const line of String(raw).split('\n')) {
+        const idx = line.indexOf(':');
+        if (idx > 0) {
+            out[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
+        }
+    }
+    return out;
+}
+
 export async function translate(text, from, to, options) {
     const { config, setResult, detect } = options;
 
@@ -42,16 +67,11 @@ export async function translate(text, from, to, options) {
         };
     });
 
-    const headers =
-        service === 'openai'
-            ? {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${apiKey}`,
-              }
-            : {
-                  'Content-Type': 'application/json',
-                  'api-key': apiKey,
-              };
+    const headers = {
+        'Content-Type': 'application/json',
+        ...(service === 'openai' ? { Authorization: `Bearer ${apiKey}` } : { 'api-key': apiKey }),
+        ...parseCustomHeaders(config.customHeaders),
+    };
     const body = {
         ...JSON.parse(requestArguments ?? defaultRequestArguments),
         stream: stream,

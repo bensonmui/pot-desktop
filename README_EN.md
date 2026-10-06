@@ -10,6 +10,12 @@
 ## ✨ Changes in this fork
 
 **Added**
+- **Papago** translation service (Naver OpenAPI, free key).
+- **Custom HTTP headers** for OpenAI-compatible services (unlocks endpoints that need special headers).
+- **IPA phonetics** for the Bing dictionary (English words).
+- **Optional Markdown rendering** of translation results.
+- **Translation cache** to speed up repeated text.
+- **Clipboard monitor toggle** in Settings.
 - **MyMemory** translation service (free, no API key) as an extra fallback.
 - **Auto (fallback)** translation service — tries Google → Bing → MyMemory and returns the first success.
 - **Model picker** for OpenAI-compatible services (reads `/v1/models`).

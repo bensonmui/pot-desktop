@@ -165,6 +165,38 @@ function chunkText(text, limit = MAX_CHUNK) {
     return chunks;
 }
 
+async function addIpa(dict, text, fromLang) {
+    if (!dict || dict.pronunciations.length > 0) {
+        return;
+    }
+    if (fromLang !== 'en' && fromLang !== 'en-us') {
+        return;
+    }
+    const word = text.trim();
+    if (!/^[A-Za-z][A-Za-z'’-]*$/.test(word)) {
+        return;
+    }
+    try {
+        const res = await fetch(
+            `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`
+        );
+        if (!res.ok || !Array.isArray(res.data)) {
+            return;
+        }
+        const seen = new Set();
+        for (const entry of res.data) {
+            for (const phonetic of entry.phonetics || []) {
+                if (phonetic.text && !seen.has(phonetic.text)) {
+                    seen.add(phonetic.text);
+                    dict.pronunciations.push({ region: '', symbol: phonetic.text, voice: '' });
+                }
+            }
+        }
+    } catch {
+        // ignore; IPA is optional
+    }
+}
+
 export async function translate(text, from, to) {
     const fromLang = detectSource(text, from);
     if (fromLang === to) {
@@ -176,7 +208,10 @@ export async function translate(text, from, to) {
     if (isSingleWord(text)) {
         try {
             const dict = await lookupDict(auth, text, fromLang, to);
-            if (dict) return dict;
+            if (dict) {
+                await addIpa(dict, text, fromLang);
+                return dict;
+            }
         } catch (e) {
             // ignore, fall back to translate
         }

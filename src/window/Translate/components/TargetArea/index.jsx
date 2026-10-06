@@ -30,12 +30,14 @@ import { useAtomValue } from 'jotai';
 import { nanoid } from 'nanoid';
 import { useSpring, animated } from '@react-spring/web';
 import useMeasure from 'react-use-measure';
+import ReactMarkdown from 'react-markdown';
 
 import * as builtinCollectionServices from '../../../../services/collection';
 import { sourceLanguageAtom, targetLanguageAtom } from '../LanguageArea';
 import { useConfig, useToastStyle, useVoice } from '../../../../hooks';
 import { sourceTextAtom, detectLanguageAtom } from '../SourceArea';
 import { invoke_plugin } from '../../../../utils/invoke_plugin';
+import { cacheGet, cacheSet } from '../../../../utils/translate_cache';
 import * as builtinServices from '../../../../services/translate';
 import * as builtinTtsServices from '../../../../services/tts';
 
@@ -65,6 +67,8 @@ export default function TargetArea(props) {
     const [ttsServiceList] = useConfig('tts_service_list', ['lingva_tts']);
     const [translateSecondLanguage] = useConfig('translate_second_language', 'en');
     const [historyDisable] = useConfig('history_disable', false);
+    const [translateCache] = useConfig('translate_cache', true);
+    const [markdownRender] = useConfig('translate_markdown', false);
     const [isLoading, setIsLoading] = useState(false);
     const [hide, setHide] = useState(true);
 
@@ -164,6 +168,18 @@ export default function TargetArea(props) {
         let id = nanoid();
         translateID[index] = id;
 
+        const cacheText = sourceText.trim();
+        if (translateCache) {
+            const cached = cacheGet(currentTranslateServiceInstanceKey, cacheText, sourceLanguage, targetLanguage);
+            if (cached !== undefined) {
+                setError('');
+                setResult(cached);
+                setIsLoading(false);
+                setHide(false);
+                return;
+            }
+        }
+
         const translateServiceName = getServiceName(currentTranslateServiceInstanceKey);
 
         if (whetherPluginService(currentTranslateServiceInstanceKey)) {
@@ -193,6 +209,15 @@ export default function TargetArea(props) {
                         info(`[${currentTranslateServiceInstanceKey}]resolve:` + v);
                         if (translateID[index] !== id) return;
                         setResult(typeof v === 'string' ? v.trim() : v);
+                        if (translateCache) {
+                            cacheSet(
+                                currentTranslateServiceInstanceKey,
+                                cacheText,
+                                sourceLanguage,
+                                targetLanguage,
+                                typeof v === 'string' ? v.trim() : v
+                            );
+                        }
                         setIsLoading(false);
                         if (v !== '') {
                             setHideOnce(false);
@@ -507,12 +532,52 @@ export default function TargetArea(props) {
                     {/* result content */}
                     <CardBody className={`p-[12px] pb-0 ${hide && 'h-0 p-0'}`}>
                         {typeof result === 'string' ? (
-                            <textarea
-                                ref={textAreaRef}
-                                className={`text-[${appFontSize}px] h-0 resize-none bg-transparent select-text outline-none`}
-                                readOnly
-                                value={result}
-                            />
+                            markdownRender && result ? (
+                                <div
+                                    ref={textAreaRef}
+                                    className={`text-[${appFontSize}px] select-text`}
+                                >
+                                    <ReactMarkdown
+                                        components={{
+                                            p: ({ node, ...props }) => <p className='my-1' {...props} />,
+                                            ul: ({ node, ...props }) => (
+                                                <ul className='list-disc ml-5 my-1' {...props} />
+                                            ),
+                                            ol: ({ node, ...props }) => (
+                                                <ol className='list-decimal ml-5 my-1' {...props} />
+                                            ),
+                                            li: ({ node, ...props }) => <li className='my-[2px]' {...props} />,
+                                            h1: ({ node, ...props }) => (
+                                                <h1 className='text-[1.4em] font-bold my-2' {...props} />
+                                            ),
+                                            h2: ({ node, ...props }) => (
+                                                <h2 className='text-[1.2em] font-bold my-2' {...props} />
+                                            ),
+                                            h3: ({ node, ...props }) => (
+                                                <h3 className='text-[1.1em] font-bold my-2' {...props} />
+                                            ),
+                                            code: ({ node, ...props }) => (
+                                                <code className='bg-content2 px-1 rounded text-[0.9em]' {...props} />
+                                            ),
+                                            pre: ({ node, ...props }) => (
+                                                <pre className='bg-content2 p-2 rounded my-2 overflow-x-auto' {...props} />
+                                            ),
+                                            a: ({ node, ...props }) => (
+                                                <a className='text-primary underline' {...props} />
+                                            ),
+                                        }}
+                                    >
+                                        {result}
+                                    </ReactMarkdown>
+                                </div>
+                            ) : (
+                                <textarea
+                                    ref={textAreaRef}
+                                    className={`text-[${appFontSize}px] h-0 resize-none bg-transparent select-text outline-none`}
+                                    readOnly
+                                    value={result}
+                                />
+                            )
                         ) : (
                             <div>
                                 {result['pronunciations'] &&
