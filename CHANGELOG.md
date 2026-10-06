@@ -3,6 +3,18 @@
 本 fork 的變更，中英雙語。
 Notable changes in this fork, in Chinese and English.
 
+## [3.0.12] - 2026-10-06
+
+### Changed / 調整
+
+- **PDF / OCR 文字清理強化** — 翻譯前清理 PDF 複製或 OCR 的文字時，會自動去除跨行連字號、合併段落內換行，並保留空行分段（不再把整段壓成一行）。
+  **Better PDF / OCR text cleaning** — before translating, copied PDF or OCR text is de-hyphenated across line breaks, single line breaks inside a paragraph are joined, and blank-line paragraph breaks are preserved (instead of flattening everything to one line).
+- **增量貼上以空行分段接合** — `incremental_translate` 收集文字時改用空行分隔，較易閱讀。
+  **Incremental paste joins with a blank line** — `incremental_translate` now separates collected pieces with a blank line.
+
+> 註：**靜默 OCR**（OCR → 自動複製 + 隱藏視窗）與**增量**（`incremental_translate`）本已存在；本次只是強化文字清理。
+> Note: **Silent OCR** (auto copy + hidden window) and **incremental** already existed; this release only improves text cleaning.
+
 ## [3.0.11] - 2026-10-06
 
 ### Added / 新增

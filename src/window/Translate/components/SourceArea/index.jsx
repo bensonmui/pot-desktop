@@ -20,6 +20,7 @@ import * as recognizeServices from '../../../../services/recognize';
 import * as builtinTtsServices from '../../../../services/tts';
 import detect from '../../../../utils/lang_detect';
 import { store } from '../../../../utils/store';
+import { cleanText, appendText } from '../../../../utils/text';
 import { info } from 'tauri-plugin-log-api';
 import { debug } from 'tauri-plugin-log-api';
 
@@ -84,18 +85,8 @@ export default function SourceArea(props) {
                     ).then(
                         (v) => {
                             let newText = v.trim();
-                            if (deleteNewline) {
-                                newText = v.replace(/\-\s+/g, '').replace(/\s+/g, ' ');
-                            } else {
-                                newText = v.trim();
-                            }
-                            if (incrementalTranslate) {
-                                setSourceText((old) => {
-                                    return old + ' ' + newText;
-                                });
-                            } else {
-                                setSourceText(newText);
-                            }
+                            newText = deleteNewline ? cleanText(v) : v.trim();
+                            setSourceText((old) => (incrementalTranslate ? appendText(old, newText) : newText));
                             detect_language(newText).then(() => {
                                 syncSourceText();
                             });
@@ -120,19 +111,8 @@ export default function SourceArea(props) {
                         )
                         .then(
                             (v) => {
-                                let newText = v.trim();
-                                if (deleteNewline) {
-                                    newText = v.replace(/\-\s+/g, '').replace(/\s+/g, ' ');
-                                } else {
-                                    newText = v.trim();
-                                }
-                                if (incrementalTranslate) {
-                                    setSourceText((old) => {
-                                        return old + ' ' + newText;
-                                    });
-                                } else {
-                                    setSourceText(newText);
-                                }
+                                const newText = deleteNewline ? cleanText(v) : v.trim();
+                                setSourceText((old) => (incrementalTranslate ? appendText(old, newText) : newText));
                                 detect_language(newText).then(() => {
                                     syncSourceText();
                                 });
@@ -147,19 +127,8 @@ export default function SourceArea(props) {
             }
         } else {
             setWindowType('[SELECTION_TRANSLATE]');
-            let newText = text.trim();
-            if (deleteNewline) {
-                newText = text.replace(/\-\s+/g, '').replace(/\s+/g, ' ');
-            } else {
-                newText = text.trim();
-            }
-            if (incrementalTranslate) {
-                setSourceText((old) => {
-                    return old + ' ' + newText;
-                });
-            } else {
-                setSourceText(newText);
-            }
+            let newText = deleteNewline ? cleanText(text) : text.trim();
+            setSourceText((old) => (incrementalTranslate ? appendText(old, newText) : newText));
             detect_language(newText).then(() => {
                 syncSourceText();
             });
@@ -433,7 +402,7 @@ export default function SourceArea(props) {
                                     variant='light'
                                     size='sm'
                                     onPress={() => {
-                                        const newText = sourceText.replace(/\-\s+/g, '').replace(/\s+/g, ' ');
+                                        const newText = cleanText(sourceText);
                                         setSourceText(newText);
                                         detect_language(newText).then(() => {
                                             syncSourceText();

@@ -16,6 +16,7 @@
 - **Auto-update** (Windows x64) and **more build targets** (Windows x86/arm64, macOS, Linux).
 
 **Fixed**
+- **PDF / OCR text cleaning** — de-hyphenates words split across line breaks, joins lines inside a paragraph, and preserves paragraph breaks.
 - **Long text** — Bing now splits input into ~1000-character chunks and joins the results (its web endpoint rejects longer text with `statusCode 400`).
 - **Google Translate** — falls back to a working endpoint when `translate.google.com` is rate-limited (HTTP 429).
 - **Ollama** — disable thinking so local models translate directly.

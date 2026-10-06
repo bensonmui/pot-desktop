@@ -15,6 +15,7 @@ import { invoke_plugin } from '../../../utils/invoke_plugin';
 import * as builtinServices from '../../../services/recognize';
 import { useConfig } from '../../../hooks';
 import { base64Atom } from '../ImageArea';
+import { cleanText } from '../../../utils/text';
 import { pluginListAtom } from '..';
 
 export const textAtom = atom();
@@ -59,10 +60,7 @@ export default function TextArea(props) {
                         }).then(
                             (v) => {
                                 if (recognizeId !== id) return;
-                                v = v.trim();
-                                if (deleteNewline) {
-                                    v = v.replace(/\-\s+/g, '').replace(/\s+/g, ' ');
-                                }
+                                v = deleteNewline ? cleanText(v) : v.trim();
                                 setText(v);
                                 setLoading(false);
                                 if (autoCopy) {
@@ -100,10 +98,7 @@ export default function TextArea(props) {
                         .then(
                             (v) => {
                                 if (recognizeId !== id) return;
-                                v = v.trim();
-                                if (deleteNewline) {
-                                    v = v.replace(/\-\s+/g, '').replace(/\s+/g, ' ');
-                                }
+                                v = deleteNewline ? cleanText(v) : v.trim();
                                 setText(v);
                                 setLoading(false);
                                 if (autoCopy) {
@@ -194,7 +189,7 @@ export default function TextArea(props) {
                             variant='light'
                             size='sm'
                             onPress={() => {
-                                setText(text.replace(/\-\s+/g, '').replace(/\s+/g, ' '));
+                                setText(cleanText(text));
                             }}
                         >
                             <MdSmartButton className='text-[16px]' />
