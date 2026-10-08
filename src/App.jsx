@@ -10,7 +10,6 @@ import Screenshot from './window/Screenshot';
 import Translate from './window/Translate';
 import Recognize from './window/Recognize';
 import Updater from './window/Updater';
-import { store } from './utils/store';
 import Config from './window/Config';
 import { useConfig } from './hooks';
 import './style.css';
@@ -35,10 +34,6 @@ export default function App() {
     const [appRadius] = useConfig('app_radius', 'default');
     const { setTheme } = useTheme();
     const { i18n } = useTranslation();
-
-    useEffect(() => {
-        store.load();
-    }, []);
 
     useEffect(() => {
         if (devMode !== null && devMode) {

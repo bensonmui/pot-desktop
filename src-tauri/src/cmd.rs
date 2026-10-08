@@ -1,12 +1,12 @@
 use crate::config::get;
-use crate::config::StoreWrapper;
+use crate::config::reload_config;
+use crate::config_state::ConfigSnapshot;
 use crate::error::Error;
 use crate::StringWrapper;
 use crate::APP;
 use log::{error, info};
 use serde_json::{json, Value};
 use std::io::Read;
-use tauri::Manager;
 
 #[tauri::command]
 pub fn get_text(state: tauri::State<StringWrapper>) -> String {
@@ -14,10 +14,8 @@ pub fn get_text(state: tauri::State<StringWrapper>) -> String {
 }
 
 #[tauri::command]
-pub fn reload_store() {
-    let state = APP.get().unwrap().state::<StoreWrapper>();
-    let mut store = state.0.lock().unwrap();
-    store.load().unwrap();
+pub fn reload_store() -> Result<ConfigSnapshot, String> {
+    reload_config()
 }
 
 #[tauri::command]

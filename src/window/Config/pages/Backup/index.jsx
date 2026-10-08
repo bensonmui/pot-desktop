@@ -1,7 +1,6 @@
 import { readTextFile, writeTextFile, BaseDirectory } from '@tauri-apps/api/fs';
 import { save, open } from '@tauri-apps/api/dialog';
 import { appConfigDir, join } from '@tauri-apps/api/path';
-import { invoke } from '@tauri-apps/api';
 import { store } from '../../../../utils/store';
 import { DropdownTrigger } from '@nextui-org/react';
 import { useDisclosure } from '@nextui-org/react';
@@ -211,11 +210,7 @@ export default function Backup() {
                 return;
             }
             const content = await readTextFile(path);
-            JSON.parse(content);
-            const dir = await appConfigDir();
-            await writeTextFile(await join(dir, 'config.json'), content);
-            await store.load();
-            await invoke('reload_store');
+            await store.replace(JSON.parse(content));
             toast.success(t('config.backup.import_success'), { style: toastStyle });
         } catch (e) {
             toast.error(`${t('config.backup.import_failed')}: ${String(e)}`, { style: toastStyle });

@@ -5,6 +5,7 @@ mod backup;
 mod clipboard;
 mod cmd;
 mod config;
+mod config_state;
 mod error;
 mod hotkey;
 #[cfg(windows)]
@@ -63,7 +64,6 @@ fn main() {
             Some(vec![]),
         ))
         .plugin(tauri_plugin_sql::Builder::default().build())
-        .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_fs_watch::init())
         .system_tray(tauri::SystemTray::new())
         .setup(|app| {
@@ -117,7 +117,10 @@ fn main() {
             }
             match get("proxy_enable") {
                 Some(v) => {
-                    if v.as_bool().unwrap() && get("proxy_host").map_or(false, |host| !host.as_str().unwrap().is_empty()) {
+                    if v.as_bool().unwrap()
+                        && get("proxy_host")
+                            .map_or(false, |host| !host.as_str().unwrap().is_empty())
+                    {
                         let _ = set_proxy();
                     }
                 }
@@ -145,6 +148,11 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             reload_store,
+            get_config_snapshot,
+            write_config,
+            initialize_config,
+            delete_config,
+            replace_config,
             get_text,
             cut_image,
             get_base64,

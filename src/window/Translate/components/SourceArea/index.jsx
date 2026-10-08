@@ -21,7 +21,7 @@ import * as recognizeServices from '../../../../services/recognize';
 import * as builtinTtsServices from '../../../../services/tts';
 import detect from '../../../../utils/lang_detect';
 import { cleanText, appendText } from '../../../../utils/text';
-import { info } from 'tauri-plugin-log-api';
+import { info, error } from 'tauri-plugin-log-api';
 
 export const sourceTextAtom = atom('');
 export const detectLanguageAtom = atom('');
@@ -60,21 +60,53 @@ export default function SourceArea(props) {
     const textAreaRef = useRef();
     const speak = useVoice();
     const isComposingRef = useRef(false);
+    const showRequestRef = useRef(0);
+
+    const showWindow = async () => {
+        const request = ++showRequestRef.current;
+        await new Promise((resolve) => {
+            let firstFrame;
+            let secondFrame;
+            const finish = () => {
+                clearTimeout(timeout);
+                cancelAnimationFrame(firstFrame);
+                cancelAnimationFrame(secondFrame);
+                resolve();
+            };
+            const timeout = setTimeout(finish, 150);
+            firstFrame = requestAnimationFrame(() => {
+                secondFrame = requestAnimationFrame(finish);
+            });
+        });
+        if (request !== showRequestRef.current) return;
+        try {
+            await appWindow.show();
+            if (request !== showRequestRef.current) return;
+            await appWindow.setFocus();
+        } catch {
+            await error('Failed to show or focus the translation window').catch(() => {});
+        }
+    };
+
+    useEffect(
+        () => () => {
+            showRequestRef.current += 1;
+        },
+        []
+    );
 
     const handleNewText = async (text) => {
         text = text.trim();
-        if (hideWindow) {
-            appWindow.hide();
+        if (hideWindow && text !== '[INPUT_TRANSLATE]') {
+            showRequestRef.current += 1;
+            void appWindow.hide().catch(() => error('Failed to hide the translation window').catch(() => {}));
         } else {
-            appWindow.show();
-            appWindow.setFocus();
+            void showWindow();
         }
         // 清空检测语言
         setDetectLanguage('');
         if (text === '[INPUT_TRANSLATE]') {
             setWindowType('[INPUT_TRANSLATE]');
-            appWindow.show();
-            appWindow.setFocus();
             setSourceText('', true);
         } else if (text === '[IMAGE_TRANSLATE]') {
             setWindowType('[IMAGE_TRANSLATE]');
@@ -199,7 +231,6 @@ export default function SourceArea(props) {
                 });
             }
             unlisten = listen('new_text', (event) => {
-                appWindow.setFocus();
                 handleNewText(event.payload);
             });
         }

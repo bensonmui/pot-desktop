@@ -1,29 +1,83 @@
+use crate::config_state::{ConfigSnapshot, ConfigState};
 use crate::{error::Error, APP};
 use dirs::config_dir;
 use log::{info, warn};
 use serde_json::{json, Value};
+use std::collections::BTreeMap;
 use std::sync::Mutex;
-use tauri::{Manager, Wry};
-use tauri_plugin_store::{Store, StoreBuilder};
+use tauri::Manager;
 
-pub struct StoreWrapper(pub Mutex<Store<Wry>>);
+pub struct StoreWrapper(pub Mutex<ConfigState>);
 
 pub fn init_config(app: &mut tauri::App) {
     let config_path = config_dir().unwrap();
     let config_path = config_path.join(app.config().tauri.bundle.identifier.clone());
     let config_path = config_path.join("config.json");
     info!("Load config from: {:?}", config_path);
-    let mut store = StoreBuilder::new(app.handle(), config_path).build();
+    let mut store = ConfigState::new(config_path);
 
-    match store.load() {
+    match store.reload() {
         Ok(_) => info!("Config loaded"),
         Err(e) => {
             warn!("Config load error: {:?}", e);
-            info!("Config not found, creating new config");
         }
     }
+    let ready = store.snapshot().is_ok();
     app.manage(StoreWrapper(Mutex::new(store)));
-    let _ = check_service_available();
+    if ready {
+        let _ = check_service_available();
+    }
+}
+
+fn apply_config(
+    operation: impl FnOnce(&mut ConfigState) -> Result<ConfigSnapshot, String>,
+) -> Result<ConfigSnapshot, String> {
+    let app = APP.get().ok_or("Application is not initialized")?;
+    let state = app.state::<StoreWrapper>();
+    let mut store = state
+        .0
+        .lock()
+        .map_err(|_| "Configuration lock is unavailable")?;
+    let revision = store.revision;
+    let snapshot = operation(&mut store)?;
+    if snapshot.revision != revision {
+        if app.emit_all("config_updated", &snapshot).is_err() {
+            warn!("Failed to publish configuration update");
+        }
+    }
+    Ok(snapshot)
+}
+
+#[tauri::command]
+pub fn get_config_snapshot() -> Result<ConfigSnapshot, String> {
+    apply_config(|store| store.snapshot())
+}
+
+#[tauri::command]
+pub fn write_config(values: BTreeMap<String, Value>) -> Result<ConfigSnapshot, String> {
+    apply_config(|store| store.write(values))
+}
+
+#[tauri::command]
+pub fn initialize_config(
+    key: String,
+    default_value: Option<Value>,
+) -> Result<ConfigSnapshot, String> {
+    apply_config(|store| store.initialize(key, default_value))
+}
+
+#[tauri::command]
+pub fn delete_config(key: String) -> Result<ConfigSnapshot, String> {
+    apply_config(|store| store.remove(&key))
+}
+
+#[tauri::command]
+pub fn replace_config(values: BTreeMap<String, Value>) -> Result<ConfigSnapshot, String> {
+    apply_config(|store| store.replace(values))
+}
+
+pub fn reload_config() -> Result<ConfigSnapshot, String> {
+    apply_config(|store| store.reload())
 }
 
 fn check_available(list: Vec<String>, builtin: Vec<&str>, plugin: Vec<String>, key: &str) {
@@ -171,17 +225,13 @@ pub fn get_plugin_list(plugin_type: &str) -> Option<Vec<String>> {
 pub fn get(key: &str) -> Option<Value> {
     let state = APP.get().unwrap().state::<StoreWrapper>();
     let store = state.0.lock().unwrap();
-    match store.get(key) {
-        Some(value) => Some(value.clone()),
-        None => None,
-    }
+    store.get(key)
 }
 
 pub fn set<T: serde::ser::Serialize>(key: &str, value: T) {
-    let state = APP.get().unwrap().state::<StoreWrapper>();
-    let mut store = state.0.lock().unwrap();
-    store.insert(key.to_string(), json!(value)).unwrap();
-    store.save().unwrap();
+    if let Err(error) = write_config(BTreeMap::from([(key.to_string(), json!(value))])) {
+        warn!("Failed to save configuration: {}", error);
+    }
 }
 
 pub fn is_first_run() -> bool {

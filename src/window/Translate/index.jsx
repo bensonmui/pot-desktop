@@ -15,7 +15,7 @@ import SourceArea from './components/SourceArea';
 import TargetArea from './components/TargetArea';
 import { osType } from '../../utils/env';
 import { useConfig } from '../../hooks';
-import { store } from '../../utils/store';
+import { store, saveConfigValues } from '../../utils/store';
 import { info } from 'tauri-plugin-log-api';
 
 let blurTimeout = null;
@@ -201,9 +201,10 @@ export default function Translate() {
                         const monitor = await currentMonitor();
                         const factor = monitor.scaleFactor;
                         position = position.toLogical(factor);
-                        await store.set('translate_window_position_x', parseInt(position.x));
-                        await store.set('translate_window_position_y', parseInt(position.y));
-                        await store.save();
+                        await saveConfigValues({
+                            translate_window_position_x: parseInt(position.x),
+                            translate_window_position_y: parseInt(position.y),
+                        });
                     }
                 }, 100);
             });
@@ -227,9 +228,10 @@ export default function Translate() {
                         const monitor = await currentMonitor();
                         const factor = monitor.scaleFactor;
                         size = size.toLogical(factor);
-                        await store.set('translate_window_height', parseInt(size.height));
-                        await store.set('translate_window_width', parseInt(size.width));
-                        await store.save();
+                        await saveConfigValues({
+                            translate_window_height: parseInt(size.height),
+                            translate_window_width: parseInt(size.width),
+                        });
                     }
                 }, 100);
             });
@@ -335,17 +337,15 @@ export default function Translate() {
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                             >
-                                                <motion.div {...cardAnim}>
-                                                    <TargetArea
-                                                        {...provided.dragHandleProps}
-                                                        index={index}
-                                                        name={serviceInstanceKey}
-                                                        translateServiceInstanceList={translateServiceInstanceList}
-                                                        pluginList={pluginList}
-                                                        serviceInstanceConfigMap={serviceInstanceConfigMap}
-                                                    />
-                                                    <Spacer y={2} />
-                                                </motion.div>
+                                                <TargetArea
+                                                    {...provided.dragHandleProps}
+                                                    index={index}
+                                                    name={serviceInstanceKey}
+                                                    translateServiceInstanceList={translateServiceInstanceList}
+                                                    pluginList={pluginList}
+                                                    serviceInstanceConfigMap={serviceInstanceConfigMap}
+                                                />
+                                                <Spacer y={2} />
                                             </div>
                                         )}
                                     </Draggable>
@@ -361,25 +361,13 @@ export default function Translate() {
 
     const rootAnim = uiAnimations
         ? {
-              initial: { opacity: 0, scale: 0.98 },
-              animate: closing ? { opacity: 0, scale: 0.98 } : { opacity: windowOpacity ?? 1, scale: 1 },
-              transition: { type: 'spring', stiffness: 320, damping: 28 },
+              initial: false,
+              animate: { opacity: closing ? 0 : windowOpacity ?? 1 },
+              transition: { duration: closing ? 0.15 : 0 },
           }
         : {
               initial: false,
-              animate: { opacity: windowOpacity ?? 1, scale: 1 },
-              transition: { duration: 0 },
-          };
-
-    const cardAnim = uiAnimations
-        ? {
-              initial: { opacity: 0, y: 10 },
-              animate: { opacity: 1, y: 0 },
-              transition: { type: 'spring', stiffness: 320, damping: 26 },
-          }
-        : {
-              initial: false,
-              animate: { opacity: 1, y: 0 },
+              animate: { opacity: windowOpacity ?? 1 },
               transition: { duration: 0 },
           };
 

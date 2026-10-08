@@ -3,6 +3,80 @@
 本 fork 的變更。每個版本**先列中文、再列英文**（不逐句交錯）。
 Changes in this fork. Each version lists **Chinese first, then English** (not interleaved).
 
+## [3.1.0] - 2026-10-08
+
+### 修正
+
+- **設定同步穩定性**：整合 3.0.24–3.0.28 的設定交易、初始化保護與多視窗同步修正。
+- **移除過期延遲寫入**：設定修改直接送往後端，不再讓尚未執行的延遲儲存在匯入、刪除或元件卸載後覆蓋設定；初始化事件亦不會覆蓋使用者已編輯的本地草稿。
+- **設定檔監聽**：改為監聽設定目錄並篩選設定檔事件，避免原子替換檔案後監聽失效。
+- **翻譯視窗呈現**：整合開窗與聚焦請求保護及減少入場動畫的調整。
+
+### Fixed
+
+- **Stable configuration synchronization**: includes the configuration transactions, initialization safeguards and cross-window synchronization improvements from 3.0.24–3.0.28.
+- **Remove stale delayed writes**: setting edits go directly to the backend, preventing deferred saves from overwriting imports or deletions after a component unmounts. Initialization events preserve locally edited drafts.
+- **Configuration file watching**: watch the parent directory and filter configuration events so atomic file replacement does not invalidate the watcher.
+- **Translation window presentation**: includes show/focus request safeguards and reduced entrance animations.
+
+## [3.0.28] - 2026-10-08
+
+### 修正
+
+- **跨視窗設定交易**：設定讀寫統一使用後端共用儲存體。修改、保存、初始化與重新載入共用同一把鎖，避免其他視窗在寫入與保存之間載入舊值；以暫存檔替換保存，失敗時不發布新快照。
+- **過期初始化保護**：設定事件或使用者修改發生後，不再讓較早的初始化結果覆蓋新狀態；快照帶版本號，過期回覆與重複事件不會回退設定。
+- **匯入與重新載入同步**：設定替換、刪除或重新載入會通知各視窗已掛載的設定控制項；匯入改由後端保存，重新載入也會移除檔案中已刪除的設定。
+
+### Fixed
+
+- **Cross-window configuration transactions**: one backend store and mutex cover mutations, persistence, default initialization and reloads. Settings are persisted through temporary-file replacement; failed writes do not publish a new snapshot.
+- **Reject stale initialization**: older initialization results cannot override newer setting events or local edits. Versioned snapshots reject outdated replies and duplicate events.
+- **Synchronize imported and reloaded settings**: replacements, deletions and reloads notify mounted controls in every window. Imports use backend persistence, and reloads remove keys deleted from the file.
+
+## [3.0.27] - 2026-10-08
+
+### 修正
+
+- **設定讀取失敗保護**：啟動時無法讀取既有設定或建立快照，會停止初始化並顯示錯誤，不再把讀取失敗當成缺少設定而寫入預設值。
+- **設定快照一致性**：設定寫入、刪除、清空及重新載入會更新快照；設定操作依序執行，只有確實缺少的設定才初始化，避免同一個設定被多個元件重複寫入。設定變更事件在儲存成功後發送。
+- **開窗取消競態**：顯示視窗完成後再次檢查請求是否仍有效，避免舊請求在新的隱藏請求後聚焦；顯示、隱藏與聚焦失敗會記錄錯誤。
+
+### Fixed
+
+- **Protect settings on read failure**: initialization stops with an error if an existing configuration cannot be loaded or its snapshot cannot be read, instead of replacing unread settings with defaults.
+- **Keep configuration snapshots consistent**: writes, deletes, clears and reloads update the snapshot. Configuration operations are serialized and missing settings are initialized once per key. Change events are emitted only after successful persistence.
+- **Cancel stale focus requests**: recheck the show request after the show operation completes. Failed show, hide and focus operations are logged.
+
+## [3.0.26] - 2026-10-08
+
+### 修正
+
+- **繼續處理快捷鍵開窗閃爍**：3.0.25 未完全解決使用者回報的問題。移除整個翻譯視窗的進場透明度／縮放動畫，保留關閉淡出；顯示前等待兩次繪製回呼，並依序顯示、聚焦，避免重複聚焦。隱藏視窗若暫停繪製回呼，150ms 後仍會顯示，避免無法開窗。實際快捷鍵的視覺效果仍需驗證。
+
+### Fixed
+
+- **Further mitigation for shortcut-triggered flicker**: 3.0.25 did not fully resolve the reported issue. Remove the translate window's entrance opacity/scale animation while preserving its closing fade. Wait for two animation-frame callbacks before showing and then focusing, without duplicate focus calls. A 150ms fallback prevents hidden-window frame throttling from blocking display. Visual verification of the actual shortcut path is still required.
+
+## [3.0.25] - 2026-10-08
+
+### 修正
+
+- **翻譯視窗開啟時的閃爍（真正原因）**：`useConfig` 以往第一次渲染是 `null`，要等非同步的 `store.get` 回來才套用設定。翻譯卡片上的「毛玻璃」`backdrop-filter`、進場動畫、tech 背景等因此是在視窗顯示**之後**才補上，Chromium/WebView2 會為此重新合成圖層，造成卡片閃一格。現在在 `App` 渲染前先把整份 `config.json` 讀進同步快照，`useConfig` 第一次渲染就拿到正確值，視窗顯示後不再變更樣式。
+
+### Fixed
+
+- **Translate-window flicker (actual root cause)**: `useConfig` previously started each value as `null` and only applied the real value once the async `store.get` resolved. Styles on the translation cards — the "glass" `backdrop-filter`, entrance animation, tech background — were therefore added **after** the window became visible, forcing Chromium/WebView2 to recomposite layers and flash the cards for one frame. The whole `config.json` is now read into a synchronous snapshot before `App` renders, so `useConfig` has the correct value on the very first render and nothing changes after the window is shown.
+
+## [3.0.24] - 2026-10-07
+
+### 修正
+
+- **開啟翻譯視窗時的閃爍**：移除翻譯卡的「進場動畫」（設定非同步載入完成後，會讓整張卡瞬間變透明再出現，看起來像閃一下）。其餘動畫（視窗開關、結果淡入、語言交換、按鈕微互動）保留。
+
+### Fixed
+
+- **Flicker when opening the translate window**: removed the translation cards' "entrance animation" (once the settings finished loading asynchronously it briefly made each whole card transparent and back, looking like a flash). Other animations (window open/close, result fade, language swap, button micro-interactions) are kept.
+
 ## [3.0.23] - 2026-10-07
 
 ### 新增

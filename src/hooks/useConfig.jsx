@@ -1,67 +1,71 @@
-import { useCallback, useEffect } from 'react';
-import { listen, emit } from '@tauri-apps/api/event';
+import { useCallback, useEffect, useRef } from 'react';
 import { useGetState } from './useGetState';
-import { store } from '../utils/store';
-import { debounce } from '../utils';
+import {
+    getConfigValue,
+    initializeConfigValue,
+    subscribeConfig,
+    saveConfigValues,
+    deleteConfigValue,
+} from '../utils/store';
+import { error } from 'tauri-plugin-log-api';
 
 export const useConfig = (key, defaultValue, options = {}) => {
-    const [property, setPropertyState, getProperty] = useGetState(null);
+    const cached = getConfigValue(key);
+    const [property, setPropertyState, getProperty] = useGetState(cached !== undefined ? cached : defaultValue);
     const { sync = true } = options;
+    const changeRevision = useRef(0);
+    const localEditRevision = useRef(0);
+    const defaultValueRef = useRef(defaultValue);
+    defaultValueRef.current = defaultValue;
 
-    // 同步到Store (State -> Store)
     const syncToStore = useCallback(
-        debounce((v) => {
-            store.set(key, v);
-            store.save();
-            let eventKey = key.replaceAll('.', '_').replaceAll('@', ':');
-            emit(`${eventKey}_changed`, v);
-        }),
-        []
+        async (value) => {
+            try {
+                await saveConfigValues({ [key]: value });
+            } catch {
+                await error(`Failed to save configuration key: ${key}`).catch(() => {});
+            }
+        },
+        [key]
     );
 
-    // 同步到State (Store -> State)
-    const syncToState = useCallback((v) => {
-        if (v !== null) {
-            setPropertyState(v);
-        } else {
-            store.get(key).then((v) => {
-                if (v === null) {
-                    setPropertyState(defaultValue);
-                    store.set(key, defaultValue);
-                    store.save();
-                } else {
-                    setPropertyState(v);
-                }
-            });
-        }
-    }, []);
+    const setProperty = useCallback(
+        (value, forceSync = false) => {
+            changeRevision.current += 1;
+            localEditRevision.current += 1;
+            setPropertyState(value);
+            if (forceSync || sync) syncToStore(value);
+        },
+        [sync, syncToStore]
+    );
 
-    const setProperty = useCallback((v, forceSync = false) => {
-        setPropertyState(v);
-        const isSync = forceSync || sync;
-        isSync && syncToStore(v);
-    }, []);
-
-    // 初始化
     useEffect(() => {
-        syncToState(null);
-        const eventKey = key.replaceAll('.', '_').replaceAll('@', ':');
-        const unlisten = listen(`${eventKey}_changed`, (e) => {
-            syncToState(e.payload);
+        let active = true;
+        let initializing = true;
+        const initialRevision = changeRevision.current;
+        const initialLocalEditRevision = localEditRevision.current;
+        const unsubscribe = subscribeConfig(key, (value) => {
+            if (!active) return;
+            const preserveDraft = initializing && localEditRevision.current !== initialLocalEditRevision;
+            changeRevision.current += 1;
+            if (preserveDraft) return;
+            setPropertyState(value === undefined ? defaultValueRef.current : value);
         });
-        return () => {
-            unlisten.then((f) => {
-                f();
+        initializeConfigValue(key, defaultValueRef.current)
+            .then((value) => {
+                if (active && changeRevision.current === initialRevision) setPropertyState(value);
+            })
+            .catch(() => error(`Failed to initialize configuration key: ${key}`).catch(() => {}))
+            .finally(() => {
+                initializing = false;
             });
+        return () => {
+            active = false;
+            unsubscribe();
         };
-    }, []);
+    }, [key]);
 
     return [property, setProperty, getProperty];
 };
 
-export const deleteKey = (key) => {
-    if (store.has(key)) {
-        store.delete(key);
-        store.save();
-    }
-};
+export const deleteKey = deleteConfigValue;
